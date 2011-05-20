@@ -35,7 +35,7 @@ Installation Instructions
 
 
 ### Required Equipment:
-* DE2-115 Development Kit
+* DE2-115 Development Kit (this is *not* a DE2. It has a Cyclone IV EP4CE115.)
 * USB Cable
 * Windows PC (Linux is also supported, but not documented)
 * Altera's Quartus II (installed on PC)
