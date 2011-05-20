@@ -1,0 +1,6 @@
+*~
+*.swp
+db
+incremental_db
+work
+quartus_output
