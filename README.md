@@ -95,32 +95,32 @@ Thank You!
 
 
 
-> -----BEGIN PGP SIGNED MESSAGE-----
->
-> Hash: SHA1
-> 
-> fpgaminer@bitcoin-mining.com
-> 
-> Donations are most welcome! 1E1XgiJAzm1Wn7ZWuhkryzBoViBJ7CcRCQ
->
-> -----BEGIN PGP SIGNATURE-----
-> Version: GnuPG v1.4.11 (MingW32)
-> 
-> iQIcBAEBAgAGBQJN1ckDAAoJEFFoGj2A5YKRTmQP/2S/97/LlsNIflOhV+DNF28U
-> YlSQeAqFtQqlpJmwIcPp71sPa/WSpop0v00ciec+mQJoJVGaofWvkdP462gTGyES
-> NTWbSDeAGR2ARp8DUHNhHFSef83JOS+YqXygvtDCNJjlyZXd7PDFhg4GWN4jhLhZ
-> CWwTKVP8Q4QUg1tNLpqLyCKJYtmqgB45XXfXE8coepdfRjeETwqy8b4ODYHWNCQE
-> X9Ej9sPFcBtPWB1B+h+NQq5aKPvL1LLahwJ/MB7GYiIkuFhMtcrKiXTMT8j9b3IK
-> AGcrCTcMtbjMuADtf9GGkmtmO6/omaEfgojhOFm1l2k+nYPIYVO4HobAIuIJCImm
-> KqlhYXqIayBf8DESzbfSWpD1f0lpS16cLval/Hnx5Hk7CP3FCdyTe9RGrn4BcAi1
-> CDPIwoOHd0C2o4zqMmsj14MvfjtoUw+NI7BhY5WoVHm04zHN9nyIZmjAPFrp+qM4
-> BBaFFJ6tn4mbpUWPG8Iqm3iJqMFPcwNZu9S7GUbKqjlz2rn4FcwNypZqndvdJFus
-> G1YkLbI7e0rL3MTf89FCl+XvRfn5cUVAaRDjZVQJOnk/Xsm6D2kiibuwGN+O5Pqj
-> IxYZOoxGimwKKzQf0Arr5B+dtNfiSVdupu5etluuiLSboAODECZt83f0L5t+FBhm
-> 2vYNW7VNeLA2ZnfDhCHU
->
-> =VdDC
->
-> -----END PGP SIGNATURE-----
+```
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+fpgaminer@bitcoin-mining.com
+Donation Address: 1E1XgiJAzm1Wn7ZWuhkryzBoViBJ7CcRCQ
+
+Donations are most welcome! They will be used to buy more equipment. I'm currently trying to get
+an ethernet module up and running so the miner can run all on its own.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (MingW32)
+
+iQIcBAEBAgAGBQJN1dAzAAoJEFFoGj2A5YKRt/IP/3LaZlEWvdUpAxcs5ANS3fcA
+NdKFiIycfnBKtmXjXiHQk4DZY+tbvuPPggzFHBA7k+3wV3WBOF2rjQiorODZff6q
+xb6gSVINUXucv/+SDzqx8CtjMa17wzSayiczC03t+IICYs2/atdLAFvbr0LwdbqZ
+oBQRgYK4hD39fQzD8v/L26glh3va72ZibuO043uH/WMFgcQseTFHF7QPLJm0k0A/
+nx5p0cTtqqSf4g9MQICnNU8MGVrXXOGZU4DeItbJjNcvsomzmibha+9jQ2K8XD8F
+KzbdTK+YzvdzcDMaeOgs70SnVEFfUS1ykbdDC850M6qkRP79HBqH7Neq1Rld5ktj
+Mrd2hHC4NC0fgMD3hUbTjfIcCZOPwKYvp5oCLYYO1CqzV64Ag0o9qZDr8FS+9Npv
+PEbWQpQuZqqtkhppVcCmOv4bl8XWTuQJEoxP8rWkJdfhkDUt5hwQsFrMQB7goXDc
+pJZu1wnWdzpgcDyNjkNDp6sqnJGzCgft7o3hPiZO79BZZRLtdRSMHa0RdJJK5zLv
+8JqOJCJUFhVZHSKsHyGdJHppjKk/yZbBGLuJUTAfrMk5I/X5b/V9TGiWKoPN3zce
+Hdd5LQF5Z881wCgrnPz2dwR5oXMUcWqd//ZAs7Jcnvp6Bz5HWrFH5FBgpfg0K3c6
+qBmd3GhQgxnFsBW62dAJ
+=Lvja
+-----END PGP SIGNATURE-----
+```
 
 
