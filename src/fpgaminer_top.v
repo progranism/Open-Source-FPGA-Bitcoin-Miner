@@ -65,9 +65,13 @@ module fpgaminer_top (osc_clk);
 
 
 	//// Virtual Wire Output
-	reg old_golden_ticket = 0;
 	reg [31:0] golden_nonce = 0;
 
+	// Note that the nonce reported to the external world will always be
+	// larger than the real nonce. Currently it is 132 bigger. So an
+	// external controller (like scripts/mine.tcl) needs to do:
+	// golden_nonce = golden_nonce - 132
+	// to get the real nonce.
 	virtual_wire # (.PROBE_WIDTH(32), .WIDTH(0), .INSTANCE_ID("GNON")) golden_nonce_vw_blk (.probe(golden_nonce), .source());
 
 
@@ -91,9 +95,9 @@ module fpgaminer_top (osc_clk);
 
 
 
+		// Check to see if the last hash generated is valid.
 		is_golden_ticket <= hash2[255:224] == 32'h00000000;
-		old_golden_ticket <= is_golden_ticket;
-		if(is_golden_ticket && !old_golden_ticket)
+		if(is_golden_ticket)
 		begin
 			golden_nonce <= nonce;
 		end
