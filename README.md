@@ -3,6 +3,7 @@ Terasic DE2-115 FPGA Open-Source Bitcoin Miner
 
 --------------------------------------------------------------------------------
 Copyright (C) 2011 fpgaminer@bitcoin-mining.com
+
 See LICENSE.txt
 
 
@@ -10,7 +11,9 @@ Purpose
 -------
 
 To promote the free and open development of an FPGA based Bitcoin mining solution.
+
 http://www.weusecoins.com/
+
 http://bitcoin.org/
 
 
@@ -18,9 +21,10 @@ Project Status
 --------------
 
 Project is fully functional and allows mining of Bitcoins both in a Pool and Solo.
-Can also support Namecoin mining with a minor modification (tested but not documented).
+It can also support Namecoin mining with a minor modification (tested but not documented).
 
 **Current Performance:** 80 MHash/s
+
 *Note: The included default configuration file, and source files, are built for
 50 MHash/s performance (downclocked). This is meant to prevent damage to your valuable
 chip if you don't provide an appropriate cooling solution.*
@@ -92,11 +96,13 @@ Thank You!
 
 
 > -----BEGIN PGP SIGNED MESSAGE-----
+>
 > Hash: SHA1
 > 
 > fpgaminer@bitcoin-mining.com
 > 
 > Donations are most welcome! 1E1XgiJAzm1Wn7ZWuhkryzBoViBJ7CcRCQ
+>
 > -----BEGIN PGP SIGNATURE-----
 > Version: GnuPG v1.4.11 (MingW32)
 > 
@@ -112,7 +118,9 @@ Thank You!
 > G1YkLbI7e0rL3MTf89FCl+XvRfn5cUVAaRDjZVQJOnk/Xsm6D2kiibuwGN+O5Pqj
 > IxYZOoxGimwKKzQf0Arr5B+dtNfiSVdupu5etluuiLSboAODECZt83f0L5t+FBhm
 > 2vYNW7VNeLA2ZnfDhCHU
+>
 > =VdDC
+>
 > -----END PGP SIGNATURE-----
 
 
