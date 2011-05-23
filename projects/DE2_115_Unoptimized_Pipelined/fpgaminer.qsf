@@ -53,11 +53,11 @@ set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "NO HEAT SINK WITH STI
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 set_global_assignment -name ALLOW_ANY_RAM_SIZE_FOR_RECOGNITION ON
 set_global_assignment -name ALLOW_ANY_SHIFT_REGISTER_SIZE_FOR_RECOGNITION ON
-set_global_assignment -name VERILOG_FILE src/sha256_transform.v
-set_global_assignment -name VERILOG_FILE src/fpgaminer_top.v
-set_global_assignment -name VERILOG_FILE src/main_pll.v
-set_global_assignment -name VERILOG_FILE src/virtual_wire.v
-set_global_assignment -name VERILOG_FILE "src/sha-256-functions.v"
+set_global_assignment -name VERILOG_FILE "../../src/sha256_transform.v"
+set_global_assignment -name VERILOG_FILE "../../src/fpgaminer_top.v"
+set_global_assignment -name VERILOG_FILE "../../src/main_pll.v"
+set_global_assignment -name VERILOG_FILE "../../src/virtual_wire.v"
+set_global_assignment -name VERILOG_FILE "../../src/sha-256-functions.v"
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
