@@ -24,6 +24,8 @@
 
 module fpgaminer_top (osc_clk);
 
+	localparam LOOP_LOG2 = 3;
+	localparam [5:0]LOOP = (6'd1 << LOOP_LOG2);
 	input osc_clk;
 
 
@@ -31,7 +33,6 @@ module fpgaminer_top (osc_clk);
 	reg [255:0] state = 0;
 	reg [511:0] data = 0;
 	reg [31:0] nonce = 32'h00000000;
-
 
 	//// PLL
 	wire hash_clk;
@@ -53,8 +54,22 @@ module fpgaminer_top (osc_clk);
 	wire [255:0] hash, hash2;
 	reg is_golden_ticket = 0;
 
-	sha256_transform uut (clk, state, data, hash);
-	sha256_transform uut2 (clk, 256'h5be0cd191f83d9ab9b05688c510e527fa54ff53a3c6ef372bb67ae856a09e667, {256'h0000010000000000000000000000000000000000000000000000000080000000, hash}, hash2);
+	sha256_transform #(.LOOP(LOOP)) uut (
+		.clk(clk),
+		.feedback(feedback),
+		.cnt(cnt),
+		.rx_state(state),
+		.rx_input(data),
+		.tx_hash(hash)
+	);
+	sha256_transform #(.LOOP(LOOP)) uut2 (
+		.clk(clk),
+		.feedback(feedback),
+		.cnt(cnt),
+		.rx_state(256'h5be0cd191f83d9ab9b05688c510e527fa54ff53a3c6ef372bb67ae856a09e667),
+		.rx_input({256'h0000010000000000000000000000000000000000000000000000000080000000, hash}),
+		.tx_hash(hash2)
+	);
 
 
 	//// Virtual Wire Control
@@ -67,6 +82,11 @@ module fpgaminer_top (osc_clk);
 	//// Virtual Wire Output
 	reg [31:0] golden_nonce = 0;
 
+	reg [LOOP_LOG2-1:0]cnt;
+	reg feedback;
+	wire [LOOP_LOG2-1:0]cnt_next;
+	wire feedback_next;
+	
 	// Note that the nonce reported to the external world will always be
 	// larger than the real nonce. Currently it is 132 bigger. So an
 	// external controller (like scripts/mine.tcl) needs to do:
@@ -74,7 +94,13 @@ module fpgaminer_top (osc_clk);
 	// to get the real nonce.
 	virtual_wire # (.PROBE_WIDTH(32), .WIDTH(0), .INSTANCE_ID("GNON")) golden_nonce_vw_blk (.probe(golden_nonce), .source());
 
+	assign cnt_next = cnt + 1;
+	// On the first count (cnt==0), load data from previous stage (no feedback)
+	// on 1..LOOP-1, take feedback from current stage
+	// This reduces the throughput by a factor of (LOOP), but also reduces the design size by the same amount
+	assign feedback_next = (cnt_next != {(LOOP_LOG2){1'b0}});
 
+	
 	//// Control Unit
 	always @ (posedge clk)
 	begin
@@ -87,16 +113,18 @@ module fpgaminer_top (osc_clk);
 			data_buf <= data2_vw;
 		`endif
 
+		cnt <= cnt_next;
+		feedback <= feedback_next;
 
 		// Give new data to the hasher
 		state <= midstate_buf;
 		data <= {384'h000002800000000000000000000000000000000000000000000000000000000000000000000000000000000080000000, nonce, data_buf[95:0]};
-		nonce <= nonce + 32'd1;
+		nonce <= feedback_next ? nonce : (nonce + 32'd1);
 
 
 
 		// Check to see if the last hash generated is valid.
-		is_golden_ticket <= hash2[255:224] == 32'h00000000;
+		is_golden_ticket <= (hash2[255:224] == 32'h00000000) && !feedback;
 		if(is_golden_ticket)
 		begin
 			golden_nonce <= nonce;
