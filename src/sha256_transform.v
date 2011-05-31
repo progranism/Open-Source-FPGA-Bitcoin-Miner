@@ -68,7 +68,7 @@ module sha256_transform #(
 			if(i == 0)
 				sha256_digester U (
 					.clk(clk),
-					.k(feedback ? Ks[32*(64-LOOP*(i+1)-cnt) +: 32] : Ks[ `IDX(63) ]),
+					.k(feedback ? Ks[32*(63-cnt) +: 32] : Ks[ `IDX(63) ]),
 					.rx_w(feedback ? W : rx_input),
 					.rx_state(feedback ? state : rx_state),
 					.tx_w(W),
@@ -77,7 +77,7 @@ module sha256_transform #(
 			else
 				sha256_digester U (
 					.clk(clk),
-					.k(Ks[32*(64-LOOP*(i+1)-cnt) +: 32]),
+					.k(Ks[32*(63-LOOP*i-cnt) +: 32]),
 					.rx_w(feedback ? W : HASHERS[i-1].W),
 					.rx_state(feedback ? state : HASHERS[i-1].state),
 					.tx_w(W),
