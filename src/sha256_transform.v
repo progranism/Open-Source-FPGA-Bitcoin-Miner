@@ -68,7 +68,7 @@ module sha256_transform #(
 			if(i == 0)
 				sha256_digester U (
 					.clk(clk),
-					.k(feedback ? Ks[32*(63-cnt) +: 32] : Ks[ `IDX(63) ]),
+					.k(Ks[32*(63-cnt) +: 32]),
 					.rx_w(feedback ? W : rx_input),
 					.rx_state(feedback ? state : rx_state),
 					.tx_w(W),
@@ -89,14 +89,14 @@ module sha256_transform #(
 
 	always @ (posedge clk)
 	begin
-		tx_hash[`IDX(0)] <= rx_state[`IDX(0)] + HASHERS[64/LOOP-6'd1].state[`IDX(0)];
-		tx_hash[`IDX(1)] <= rx_state[`IDX(1)] + HASHERS[64/LOOP-6'd1].state[`IDX(1)];
-		tx_hash[`IDX(2)] <= rx_state[`IDX(2)] + HASHERS[64/LOOP-6'd1].state[`IDX(2)];
-		tx_hash[`IDX(3)] <= rx_state[`IDX(3)] + HASHERS[64/LOOP-6'd1].state[`IDX(3)];
-		tx_hash[`IDX(4)] <= rx_state[`IDX(4)] + HASHERS[64/LOOP-6'd1].state[`IDX(4)];
-		tx_hash[`IDX(5)] <= rx_state[`IDX(5)] + HASHERS[64/LOOP-6'd1].state[`IDX(5)];
-		tx_hash[`IDX(6)] <= rx_state[`IDX(6)] + HASHERS[64/LOOP-6'd1].state[`IDX(6)];
-		tx_hash[`IDX(7)] <= rx_state[`IDX(7)] + HASHERS[64/LOOP-6'd1].state[`IDX(7)];
+		tx_hash[`IDX(0)] <= feedback ? tx_hash[`IDX(0)] : (rx_state[`IDX(0)] + HASHERS[64/LOOP-6'd1].state[`IDX(0)]);
+		tx_hash[`IDX(1)] <= feedback ? tx_hash[`IDX(1)] : (rx_state[`IDX(1)] + HASHERS[64/LOOP-6'd1].state[`IDX(1)]);
+		tx_hash[`IDX(2)] <= feedback ? tx_hash[`IDX(2)] : (rx_state[`IDX(2)] + HASHERS[64/LOOP-6'd1].state[`IDX(2)]);
+		tx_hash[`IDX(3)] <= feedback ? tx_hash[`IDX(3)] : (rx_state[`IDX(3)] + HASHERS[64/LOOP-6'd1].state[`IDX(3)]);
+		tx_hash[`IDX(4)] <= feedback ? tx_hash[`IDX(4)] : (rx_state[`IDX(4)] + HASHERS[64/LOOP-6'd1].state[`IDX(4)]);
+		tx_hash[`IDX(5)] <= feedback ? tx_hash[`IDX(5)] : (rx_state[`IDX(5)] + HASHERS[64/LOOP-6'd1].state[`IDX(5)]);
+		tx_hash[`IDX(6)] <= feedback ? tx_hash[`IDX(6)] : (rx_state[`IDX(6)] + HASHERS[64/LOOP-6'd1].state[`IDX(6)]);
+		tx_hash[`IDX(7)] <= feedback ? tx_hash[`IDX(7)] : (rx_state[`IDX(7)] + HASHERS[64/LOOP-6'd1].state[`IDX(7)]);
 	end
 
 

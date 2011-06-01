@@ -37,7 +37,8 @@ module fpgaminer_top (osc_clk);
 	//// PLL
 	wire hash_clk;
 	`ifndef SIM
-	main_pll pll_blk (osc_clk, hash_clk);
+	//main_pll pll_blk (osc_clk, hash_clk);
+	assign hash_clk = osc_clk;
 	`endif
 
 
@@ -75,30 +76,44 @@ module fpgaminer_top (osc_clk);
 	//// Virtual Wire Control
 	reg [255:0] midstate_buf = 0, data_buf = 0;
 	wire [255:0] midstate_vw, data2_vw;
+`ifndef SIM
 	virtual_wire # (.PROBE_WIDTH(0), .WIDTH(256), .INSTANCE_ID("STAT")) midstate_vw_blk(.probe(), .source(midstate_vw));
 	virtual_wire # (.PROBE_WIDTH(0), .WIDTH(256), .INSTANCE_ID("DAT2")) data2_vw_blk(.probe(), .source(data2_vw));
-
+`endif
 
 	//// Virtual Wire Output
 	reg [31:0] golden_nonce = 0;
 
-	reg [LOOP_LOG2-1:0]cnt;
-	reg feedback;
-	wire [LOOP_LOG2-1:0]cnt_next;
+	reg [5:0]cnt;
+	reg feedback, feedback_d1;
+	wire [5:0]cnt_next;
+	wire [31:0]nonce_next;
 	wire feedback_next;
+`ifndef SIM
+	wire reset;
+	assign reset = 1'b0;
+`else
+	reg reset;
+`endif
 	
 	// Note that the nonce reported to the external world will always be
 	// larger than the real nonce. Currently it is 132 bigger. So an
 	// external controller (like scripts/mine.tcl) needs to do:
 	// golden_nonce = golden_nonce - 132
 	// to get the real nonce.
+`ifndef SIM
 	virtual_wire # (.PROBE_WIDTH(32), .WIDTH(0), .INSTANCE_ID("GNON")) golden_nonce_vw_blk (.probe(golden_nonce), .source());
+	virtual_wire # (.PROBE_WIDTH(32), .WIDTH(0), .INSTANCE_ID("NONC")) nonce_vw_blk (.probe(nonce), .source());
+`endif
 
-	assign cnt_next = cnt + 1;
+	assign cnt_next =  reset ? 6'd0 : (LOOP == 1) ? 6'd0 : (cnt + 6'd1) & (LOOP-1);
 	// On the first count (cnt==0), load data from previous stage (no feedback)
 	// on 1..LOOP-1, take feedback from current stage
 	// This reduces the throughput by a factor of (LOOP), but also reduces the design size by the same amount
-	assign feedback_next = (cnt_next != {(LOOP_LOG2){1'b0}});
+	assign feedback_next = (LOOP == 1) ? 1'b0 : (cnt_next != {(LOOP_LOG2){1'b0}});
+	assign nonce_next =
+		reset ? 32'd0 :
+		feedback_next ? nonce : (nonce + 32'd1);
 
 	
 	//// Control Unit
@@ -115,31 +130,43 @@ module fpgaminer_top (osc_clk);
 
 		cnt <= cnt_next;
 		feedback <= feedback_next;
+		feedback_d1 <= feedback;
 
 		// Give new data to the hasher
 		state <= midstate_buf;
-		data <= {384'h000002800000000000000000000000000000000000000000000000000000000000000000000000000000000080000000, nonce, data_buf[95:0]};
-		nonce <= feedback_next ? nonce : (nonce + 32'd1);
+		data <= {384'h000002800000000000000000000000000000000000000000000000000000000000000000000000000000000080000000, nonce_next, data_buf[95:0]};
+		nonce <= nonce_next;
 
 
 
 		// Check to see if the last hash generated is valid.
-		is_golden_ticket <= (hash2[255:224] == 32'h00000000) && !feedback;
+		is_golden_ticket <= (hash2[255:224] == 32'h00000000) && !feedback_d1;
 		if(is_golden_ticket)
 		begin
 			golden_nonce <= nonce;
 		end
+`ifdef SIM
+		if (!feedback_d1)
+			$display ("nonce: %8x\nhash2: %54x\n", nonce, hash2);
+`endif
 	end
 
 
 	//// Simulation Clock
 `ifdef SIM
 	initial begin
+		$dumpfile("test.vcd");
+		$dumpvars(0,fpgaminer_top);
+ 		reset = 1;
 		#100
-
-		while(1)
+		#5 gen_clk = 1; #5 gen_clk = 0;
+		#5 gen_clk = 1; #5 gen_clk = 0;
+		reset = 0;
+		#100
+		
+		repeat(500)
 		begin
-			#6 gen_clk = 1; #6 gen_clk = 0;
+			#5 gen_clk = 1; #5 gen_clk = 0;
 		end
 	end
 `endif
