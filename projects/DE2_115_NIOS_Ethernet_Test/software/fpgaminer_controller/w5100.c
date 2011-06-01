@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <io.h>
+#include <sys/alt_timestamp.h>
 
 #include "w5100.h"
 
@@ -21,11 +22,19 @@
 #define SDI (1<<7)
 #define SDO (1<<6)
 
+void my_sleep(alt_u32 usec)
+{
+    alt_u32 span = (alt_timestamp_freq() / 1000000) * usec;
+    alt_u32 end = alt_timestamp() + span;
+    
+    while(alt_timestamp() < end);
+}
 
 void spi_cs_assert(void)
 {
     // assert CS
     IOWR(ETH_NSCS_BASE, 0, 0);
+    my_sleep(1);
     //P1OUT &= ~CS;
 }
 
@@ -34,6 +43,7 @@ void spi_cs_deassert(void)
     // deassert CS
     //P1OUT |= CS;
     IOWR(ETH_NSCS_BASE, 0, 1);
+    my_sleep(1);
 }
 
 bool eth_init()
@@ -54,9 +64,11 @@ bool eth_init()
     //P1OUT &= ~2;
     // delay 2us
     //_delay_cycles(2000 + 10000); // extra wait, just for good measure
-    usleep(2);
+    my_sleep(4);
     IOWR(ETH_NRESET_BASE, 0, 1);
     //P1OUT |= 2;
+    
+    my_sleep(20*1000);
     
     // SW Reset
     if(!eth_write(0, 1<<7))
@@ -100,6 +112,7 @@ bool eth_write(uint16_t address, uint8_t data)
     spi_cs_assert();
     
     if(spi_write(0xF0) != 0x00 || spi_write(address >> 8) != 0x01 || spi_write(address & 0xFF) != 0x02 || spi_write(data) != 0x03) {
+        printf("ERROR: (eth_write) failure. Problems with SPI communication.\n");
         spi_cs_deassert();
         return false;
     }
@@ -114,6 +127,7 @@ bool eth_read(uint16_t address, uint8_t *data)
     spi_cs_assert();
     
     if(spi_write(0x0F) != 0x00 || spi_write(address >> 8) != 0x01 || spi_write(address & 0xFF) != 0x02) {
+        printf("ERROR: (eth_read) failure. Problems with SPI communication.\n");
         spi_cs_deassert();
         return false;
     }
@@ -160,15 +174,18 @@ uint8_t spi_write(uint8_t c)
     
     for(i = 0; i < 8; ++i)
     {
-        IOWR(MOSI_BASE, 0, c >> 7);
+        IOWR(MOSI_BASE, 0, (c >> 7) & 1);
+        my_sleep(1);
         //P1OUT = (P1OUT & ~SDO) | ((c >> 1) & SDO);
         c <<= 1;
         IOWR(SCLK_BASE, 0, 1);
+        my_sleep(1);
         //P1OUT |= SCLK;
         c |= IORD(MISO_BASE, 0) & 1;
         //c |= (P1IN >> 7) & 1;
         //P1OUT &= ~SCLK;
         IOWR(SCLK_BASE, 0, 0);
+        my_sleep(1);
     }
     
     return c;

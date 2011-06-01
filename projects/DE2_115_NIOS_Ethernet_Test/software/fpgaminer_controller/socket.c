@@ -16,8 +16,9 @@ bool write_sock_reg(SOCKET s, uint8_t reg, uint8_t data)
 
 uint8_t read_sock_reg(SOCKET s, uint8_t reg)
 {
-    uint8_t c;
-    eth_read(0x0400 + (s << 8) + reg, &c);
+    uint8_t c = 0;
+    if (!eth_read(0x0400 + (s << 8) + reg, &c))
+        printf("FATAL ERROR: an eth_read failed. SPI communication error.\n");
     return c;
 }
 
@@ -42,7 +43,8 @@ uint8_t socket(SOCKET s, uint16_t port)
 
 void close(SOCKET s)
 {
-    write_sock_reg(s, Sn_CR, CLOSE);
+    if (!write_sock_reg(s, Sn_CR, CLOSE))
+        printf("FATAL ERROR: Closing socket failed!\n");
 }
 
 uint8_t socket_status(SOCKET s)
@@ -91,6 +93,7 @@ uint8_t established(SOCKET s)
 uint16_t send(SOCKET s, const uint8_t *buf, uint16_t len)
 {
     uint16_t free_size, offset, start_address, upper_size, left_size;
+    uint16_t base = TXBUF_BASE + (s << 11);
     
     while(true)
     {
@@ -103,7 +106,7 @@ uint16_t send(SOCKET s, const uint8_t *buf, uint16_t len)
     offset = (read_sock_reg(s, Sn_TX_WR) << 8) | read_sock_reg(s, Sn_TX_WR+1);
     offset &= 0x7FF;
     
-    start_address = TXBUF_BASE + offset;
+    start_address = base + offset;
     
     if ( (offset + len) > 2048)
     {
@@ -112,7 +115,7 @@ uint16_t send(SOCKET s, const uint8_t *buf, uint16_t len)
             return 1;
         buf += upper_size;
         left_size = len - upper_size;
-        if(!eth_write_mem(buf, TXBUF_BASE, left_size))
+        if(!eth_write_mem(buf, base, left_size))
             return 1;   
     }
     else
@@ -135,6 +138,7 @@ uint16_t send(SOCKET s, const uint8_t *buf, uint16_t len)
 uint16_t recv(SOCKET s, uint8_t *buf, uint16_t maxlen)
 {
     uint16_t size, offset, start_address, upper_size, left_size;
+    uint16_t base = RXBUF_BASE + (s << 11);
     
     size = (read_sock_reg(s, Sn_RX_RSR) << 8) | read_sock_reg(s, Sn_RX_RSR+1);
     
@@ -148,7 +152,7 @@ uint16_t recv(SOCKET s, uint8_t *buf, uint16_t maxlen)
     offset &= 0x7FF;
     
     // TODO: RXBUF_BASE + s << 8???
-    start_address = RXBUF_BASE + offset;
+    start_address = base + offset;
     
     if ( (offset + size) > 2048 )
     {
@@ -159,7 +163,7 @@ uint16_t recv(SOCKET s, uint8_t *buf, uint16_t maxlen)
         
         buf += upper_size;
         left_size = size - upper_size;
-        if (!eth_read_mem(buf, RXBUF_BASE, left_size))
+        if (!eth_read_mem(buf, base, left_size))
             return 0;
     }
     else

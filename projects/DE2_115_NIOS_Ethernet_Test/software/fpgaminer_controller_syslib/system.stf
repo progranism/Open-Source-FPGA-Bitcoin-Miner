@@ -8,11 +8,16 @@
 	<sys_defines>
 <define name="alt_max_fd" quote="no" value="32"/>
 <define name="alt_sys_clk" quote="no" value="none"/>
-<define name="alt_timestamp_clk" quote="no" value="none"/>
+<define name="alt_timestamp_clk" quote="no" value="TIMER_0"/>
 </sys_defines>
 <make_macros>
 <macro name="alt_sim_optimize" quote="no" value="0"/>
 </make_macros>
+
+
+
+
+
 <ldflags>
 <flag name="-msmallc"/>
 </ldflags>
