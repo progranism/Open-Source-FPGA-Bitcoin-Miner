@@ -20,6 +20,8 @@
 */
 
 
+`timescale 1ns/1ps
+
 module e0 (x, y);
 
 	input [31:0] x;

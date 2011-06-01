@@ -19,6 +19,15 @@
 # 
 ##
 
+
+## TODO: Probe for Hardware and Device names and allow user to select.
+## TODO: Allow user to enter username/password pairs and pool server info.
+## TDOO: Save user configurations to a file and load on start.
+## TODO: Log JSON-RPC information to a file instead of spitting it into the console, or make it a --verbose option.
+## TODO: Long polling.
+## TODO: Use the NONC virtual wire to measure hashrate.
+
+
 package ifneeded TclCurl 7.19.6 [list load TclCurl7196.dll]\n[list source tclcurl.tcl]
 package require TclCurl
 package require json
@@ -100,9 +109,6 @@ proc get_work {} {
 	set target [dict get $json_result target]
 
 	write_instance "STAT" [reverseHex $midstate]
-	#write_instance "TARG" [reverseHex $target]
-	#write_instance "HSH1" [string range [reverseHex $hash1] 0 63]
-	#write_instance "DATA" [string range [reverseHex $data] 0 63]
 	write_instance "DAT2" [string range [reverseHex $data] 64 127]
 	
 	return $data
@@ -137,8 +143,8 @@ proc wait_for_golden_ticket {timeout} {
 proc submit_work {data nonce} {
 	puts "Hex nonce: $nonce"
 	set nonce [expr 0x$nonce]
-	set nonce [expr {$nonce - 132}]
-	puts "New nonce: $nonce"
+	#set nonce [expr {$nonce - 132}] # No longer need to re-adjust nonce, the FPGA takes care of that.
+	#puts "New nonce: $nonce"
 	set nonce [format %x $nonce]
 	puts "New nonce hex: $nonce"
 

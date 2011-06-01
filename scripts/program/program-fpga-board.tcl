@@ -66,7 +66,7 @@ puts "Selected USB device: $hardware_name\n\n\n"
 
 
 # Now let the user select which SOF to program
-set sof_files [glob *.sof ../../projects/*/quartus_output/*.sof]
+set sof_files [glob *.sof]
 set id 0
 
 foreach sof_file $sof_files {
