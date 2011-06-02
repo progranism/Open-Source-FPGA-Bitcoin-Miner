@@ -21,7 +21,7 @@ Project Status
 --------------
 
 Project is fully functional and allows mining of Bitcoins both in a Pool and Solo.
-It can also support Namecoin mining with a minor modification (tested but not documented).
+It also supports Namecoins.
 
 **Current Performance:** 80 MHash/s
 

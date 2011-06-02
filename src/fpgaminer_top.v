@@ -34,7 +34,11 @@ module fpgaminer_top (osc_clk);
 	// And so on.
 	//
 	// Valid range: [0, 5]
+`ifdef CONFIG_LOOP_LOG2
+	parameter LOOP_LOG2 = `CONFIG_LOOP_LOG2;
+`else
 	parameter LOOP_LOG2 = 0;
+`endif
 
 	// No need to adjust these parameters
 	localparam [5:0] LOOP = (6'd1 << LOOP_LOG2);

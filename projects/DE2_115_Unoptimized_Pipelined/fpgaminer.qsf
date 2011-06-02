@@ -49,7 +49,7 @@ set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "2.5 V"
 set_location_assignment PIN_Y2 -to osc_clk
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to osc_clk
 set_global_assignment -name ENABLE_SIGNALTAP OFF
-set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "NO HEAT SINK WITH STILL AIR"
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 set_global_assignment -name ALLOW_ANY_RAM_SIZE_FOR_RECOGNITION ON
 set_global_assignment -name ALLOW_ANY_SHIFT_REGISTER_SIZE_FOR_RECOGNITION ON
@@ -75,4 +75,6 @@ set_global_assignment -name EDA_WRITE_NODES_FOR_POWER_ESTIMATION OFF -section_id
 set_global_assignment -name EDA_TEST_BENCH_DESIGN_INSTANCE_NAME moogerfoogin -section_id eda_simulation
 set_global_assignment -name POWER_USE_PVA OFF
 set_global_assignment -name POWER_DEFAULT_TOGGLE_RATE 65%
+set_global_assignment -name VERILOG_SHOW_LMF_MAPPING_MESSAGES OFF
+set_global_assignment -name VERILOG_MACRO "CONFIG_LOOP_LOG2=0"
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

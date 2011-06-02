@@ -145,7 +145,7 @@ proc submit_work {data nonce} {
 	set nonce [expr 0x$nonce]
 	#set nonce [expr {$nonce - 132}] # No longer need to re-adjust nonce, the FPGA takes care of that.
 	#puts "New nonce: $nonce"
-	set nonce [format %x $nonce]
+	set nonce [format %08x $nonce]
 	puts "New nonce hex: $nonce"
 
 	set hexdata1 [string range $data 0 151]
