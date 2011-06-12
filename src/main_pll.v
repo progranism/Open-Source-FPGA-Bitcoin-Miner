@@ -27,8 +27,10 @@ module main_pll (inclk0, c0);
 				.fbin (1'b1),
 				.fbmimicbidir (),
 				.fbout (),
+				// synopsys translate_off
 				.fref (),
 				.icdrclk (),
+				// synopsys translate_on
 				.locked (),
 				.pfdena (1'b1),
 				.phasecounterselect ({4{1'b1}}),
