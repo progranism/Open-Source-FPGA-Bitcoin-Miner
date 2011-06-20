@@ -14,6 +14,12 @@
 --  SHA256_SEL = 0 => Pre-calculation of H+K+W used
 --  SHA256_SEL = 1 => Quasi-pipelining used
 --
+--  I have compiled the project with NUM_CORES = 4 and SHA256_SEL = 0 for the 
+--  Stratix IV EP4SE530.  Logic utilization is 68% and clock rate is 195MHz
+--  (Slow 900mV 85C Model).  Note that total hash rate is given by the clock
+--  rate multiplied by the number of cores.  The PLL should be adjusted to
+--  match the clock rate that can be achieved.
+--
 --------------------------------------------------------------------------------
 Original readme below:
 --------------------------------------------------------------------------------
