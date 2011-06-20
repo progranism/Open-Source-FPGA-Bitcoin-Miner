@@ -14,7 +14,9 @@ The number of parallel SHA256 pairs is set via the NUM_CORES constant.
 
 Two different types of SHA256 cores can be selected by setting
 the constant SHA256_SEL:
+
 SHA256_SEL = 0 => Pre-calculation of H+K+W used
+
 SHA256_SEL = 1 => Quasi-pipelining used
 
 I have compiled the project with NUM_CORES = 4 and SHA256_SEL = 0 for the 
