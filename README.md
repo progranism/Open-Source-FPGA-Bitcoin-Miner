@@ -1,5 +1,3 @@
-
-
 Stratix IV FPGA Open-Source Bitcoin Miner
 =========================================
 
