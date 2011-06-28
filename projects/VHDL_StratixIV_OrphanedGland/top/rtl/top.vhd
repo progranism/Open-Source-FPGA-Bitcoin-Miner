@@ -124,8 +124,8 @@ begin
   
   pll_inst: pll
 	port map (
-		inclk0		                  => OSC_CLK,
-		c0		                      => clk
+    inclk0                      => OSC_CLK,
+    c0                          => clk
 	);
   
   -- in-system debugging I/O
@@ -220,7 +220,7 @@ begin
 
   end generate sha256_gen;
     
-  registers: process(clk, reset)
+  registers: process(clk, reset, q_nonce(0))
   begin
     if reset = '1' then
       q_data_in                 <= (others => '0');
