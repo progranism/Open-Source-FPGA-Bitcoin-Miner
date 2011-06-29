@@ -220,14 +220,14 @@ begin
 
   end generate sha256_gen;
     
-  registers: process(clk, reset, q_nonce(0))
+  registers: process(clk, reset)
   begin
     if reset = '1' then
       q_data_in                 <= (others => '0');
       q_h_in                    <= (others => '0');
       q_nonce(0)                <= (others => '0');
       for i in NUM_CORES-1 downto 1 loop
-        q_nonce(i)              <= q_nonce(0) + i;
+        q_nonce(i)              <= i;
       end loop;
       q_golden_nonce            <= (others => '0');
     elsif rising_edge(clk) then
