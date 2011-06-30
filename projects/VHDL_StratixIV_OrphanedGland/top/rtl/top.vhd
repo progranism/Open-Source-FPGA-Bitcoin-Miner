@@ -46,8 +46,8 @@ architecture top_rtl of top is
   
   component pll is
 	port (
-		inclk0		                  : in std_logic  := '0';
-		c0		                      : out std_logic 
+		inclk0                    : in std_logic  := '0';
+		c0                        : out std_logic 
 	);
   end component pll;
   
@@ -227,7 +227,7 @@ begin
       q_h_in                    <= (others => '0');
       q_nonce(0)                <= (others => '0');
       for i in NUM_CORES-1 downto 1 loop
-        q_nonce(i)              <= i;
+        q_nonce(i)              <= to_unsigned(i,q_nonce(i)'length);
       end loop;
       q_golden_nonce            <= (others => '0');
     elsif rising_edge(clk) then
