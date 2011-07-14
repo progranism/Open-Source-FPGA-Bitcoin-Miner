@@ -6,8 +6,8 @@
 
 # * UrJTAG with ftdi support
 
-# * output file in .svf, can be generated from .sof in Quartus II
-# Tools->Programmer->File->Create...
+# * output file in .svf format, can be generated from .sof in Quartus
+# II Tools->Programmer->File->Create...
 
 # * BSDL file for the FPGA
 
