@@ -22,7 +22,8 @@ usual way with Altera tools, for example
 
 quartus_pgm -c USB-Blaster -m JTAG -o "P;quartus_output/fpgaminer.sof"
 
-or open fpgaminer.qsf in Quartus II and program from there,
+or open the fpgaminer.qsf project in Quartus II and program from
+there,
 
 or try the more experimental way with program.sh in Linux, using
 UrJTAG and the .svf file.
