@@ -46,7 +46,7 @@ BLD_PATH     := $(TOP_PATH)/build
 TOP_FILE     := $(HDL_PATH)/fpgaminer_top.v
 
 CON_FILE     := $(CON_PATH)/fpgaminer.ucf
-TOP_MODULE   := fpgaminer
+TOP_MODULE   := fpgaminer_top
 XST_FILE     := $(DESIGN).xstbp
 SYN_BASE      = -top $(TOP_MODULE) \
                 -ifn $(TOP_FILE) \

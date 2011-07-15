@@ -22,8 +22,8 @@
 `include "main_pll.v"
 //`include "main_pll_2x.v"
 
-`include "../../../../sha-256-functions.v"
-`include "../../../../sha256_transform.v"
+`include "../../../../src/sha-256-functions.v"
+`include "../../../../src/sha256_transform.v"
 `include "serial.v" // replaces virtual_wire
 
 `include "raw7seg.v"
