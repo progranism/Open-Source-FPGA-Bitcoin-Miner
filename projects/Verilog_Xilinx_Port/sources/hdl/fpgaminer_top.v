@@ -22,17 +22,15 @@
 `include "main_pll.v"
 //`include "main_pll_2x.v"
 
-`include "sha-256-functions.v"
-`include "sha256_transform.v"
+`include "../../../../sha-256-functions.v"
+`include "../../../../sha256_transform.v"
 `include "serial.v" // replaces virtual_wire
 
-`include "display7seg.v"
+`include "raw7seg.v"
 
 `timescale 1ns/1ps
 
-//module fpgaminer_top (osc_clk, RxD, TxD);
-module fpgaminer_top (osc_clk, RxD, TxD, anode, segment);
-//module fpgaminer_top (osc_clk, RxD, TxD, anode, segment, led);
+module fpgaminer_top (osc_clk, RxD, TxD, anode, segment, disp_switch);
 
 	// The LOOP_LOG2 parameter determines how unrolled the SHA-256
 	// calculations are. For example, a setting of 1 will completely
@@ -103,17 +101,17 @@ module fpgaminer_top (osc_clk, RxD, TxD, anode, segment);
 	reg [255:0] midstate_buf = 0, data_buf = 0;
 	wire [255:0] midstate_vw, data2_vw;
 
-	input 	     RxD;
+   input 	     RxD;
    
-	serial_receive serrx (.clk(hash_clk), .RxD(RxD), .midstate(midstate_vw), .data2(data2_vw));
+   serial_receive serrx (.clk(hash_clk), .RxD(RxD), .midstate(midstate_vw), .data2(data2_vw));
    
 	//// Virtual Wire Output
 	reg [31:0] golden_nonce = 0;
-	reg serial_send;
-	wire serial_busy;
-	output TxD;
+   reg 		   serial_send;
+   wire 	   serial_busy;
+   output 	   TxD;
 
-	serial_transmit sertx (.clk(hash_clk), .TxD(TxD), .send(serial_send), .busy(serial_busy), .word(golden_nonce));
+   serial_transmit sertx (.clk(hash_clk), .TxD(TxD), .send(serial_send), .busy(serial_busy), .word(golden_nonce));
    
 
 	//// Control Unit
@@ -184,13 +182,18 @@ module fpgaminer_top (osc_clk, RxD, TxD, anode, segment);
 	end
 
    // die debuggenlichten
-   
+
+   input disp_switch;
    output [7:0] segment;
    output [3:0] anode;
-//   display7seg disp(.clk(hash_clk), .segment(segment), .anode(anode), .word({midstate_vw[15:0], data2_vw[15:0]}));
-   display7seg disp(.clk(hash_clk), .segment(segment), .anode(anode), .word(golden_nonce));
 
+   wire [7:0] 	segment_data;
+
+   // inverted signals, so 1111.. to turn it off
+   assign segment = disp_switch? segment_data : {8{1'b1}};
    
+//   raw7seg disp(.clk(hash_clk), .segment(segment_data), .anode(anode), .word({midstate_vw[15:0], data2_vw[15:0]}));
+   raw7seg disp(.clk(hash_clk), .segment(segment_data), .anode(anode), .word(golden_nonce));
    
 endmodule
 
