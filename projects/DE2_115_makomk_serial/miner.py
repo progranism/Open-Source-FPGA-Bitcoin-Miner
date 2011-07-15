@@ -2,7 +2,7 @@
 
 # by teknohog
 
-# Python wrapper for Altera Serial Miner
+# Python wrapper for Xilinx Serial Miner
 
 user = "teknohog.spartan"
 password = "nexys2"
@@ -69,9 +69,10 @@ class Writer(Thread):
     def __init__(self):
         Thread.__init__(self)
 
-        # This is accessed by other threads, so keep something
-        # sensible available
+        # Keep something sensible available while waiting for the
+        # first getwork
         self.block = "0" * 256
+        self.midstate = "0" * 64
 
         self.daemon = True
 
@@ -79,21 +80,19 @@ class Writer(Thread):
         while True:
             try:
                 work = bitcoin.getwork()
+                self.block = work['data']
+                self.midstate = work['midstate']
             except:
                 print("RPC getwork error")
                 # In this case, keep crunching with the old data. It will get 
                 # stale at some point, but it's better than doing nothing.
-
-            self.block = work['data']
-            
-            midstate = work['midstate']
 
             # Just a reminder of how Python slices work in reverse
             #rdata = self.block.decode('hex')[::-1]
             #rdata2 = rdata[32:64]
             rdata2 = self.block.decode('hex')[95:63:-1]
 
-            rmid = midstate.decode('hex')[::-1]
+            rmid = self.midstate.decode('hex')[::-1]
             
             payload = rmid + rdata2
             
