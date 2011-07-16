@@ -141,6 +141,8 @@ class Display_stats(Thread):
         self.starttime = time()
         self.daemon = True
 
+        print("Miner started on " + ctime())
+
     def run(self):
         while True:
             result = results_queue.get()
