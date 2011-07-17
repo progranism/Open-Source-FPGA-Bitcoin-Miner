@@ -1,0 +1,32 @@
+# UCF for a Nexys2 500K board
+
+NET "osc_clk" LOC = "B8";
+
+# serial port receive & transmit
+NET "RxD" LOC = "U6";
+NET "TxD" LOC = "P9";
+
+
+# 7 segment display, in the order that fpga4fun uses
+NET "segment<7>" LOC = "L18";
+NET "segment<6>" LOC = "F18";
+NET "segment<5>" LOC = "D17";
+NET "segment<4>" LOC = "D16";
+NET "segment<3>" LOC = "G14";
+NET "segment<2>" LOC = "J17";
+NET "segment<1>" LOC = "H14";
+NET "segment<0>" LOC = "C17";
+
+NET "anode<0>" LOC = "F17";
+NET "anode<1>" LOC = "H17";
+NET "anode<2>" LOC = "C18";
+NET "anode<3>" LOC = "F15";
+
+#NET "led<7>" LOC = "R4";
+#NET "led<6>" LOC = "F4";
+#NET "led<5>" LOC = "P15";
+#NET "led<4>" LOC = "E17";
+#NET "led<3>" LOC = "K14";
+#NET "led<2>" LOC = "K15";
+#NET "led<1>" LOC = "J15";
+#NET "led<0>" LOC = "J14";
