@@ -1,4 +1,4 @@
-Terasic DE2-115 FPGA Open-Source Bitcoin Miner
+Open-Source FPGA Bitcoin Miner
 ==============================================
 
 --------------------------------------------------------------------------------
@@ -23,14 +23,48 @@ Project Status
 Project is fully functional and allows mining of Bitcoins both in a Pool and Solo.
 It also supports Namecoins.
 
-**Current Performance:** 80 MHash/s
+**Current Performance:** 109 MHash/s
+*On a Terasic DE2-115 Development Board*
 
 *Note: The included default configuration file, and source files, are built for
 50 MHash/s performance (downclocked). This is meant to prevent damage to your valuable
 chip if you don't provide an appropriate cooling solution.*
 
 
-Installation Instructions
+Contributors
+------------
+
+These people have worked hard to enhance and promote the Open-Source FPGA Bitcoin Miner
+project:
+*Not listed in any particular order*
+
+**teknohog**
+1HkL2iLLQe3KJuNCgKPc8ViZs83NJyyQDM
+
+**OrphanedGland**
+1PioyqqFWXbKryxysGqoq5XAu9MTRANCEP
+
+**udif**
+
+**TheSeven**
+14Jc8vWq1mPv7vWnP5VquZZgpLEtzW2vja
+
+**makomk**
+
+**newMeat1**
+1LbqTCA1cnpbbdKbXzZZfHYMe7teiczQc2
+
+
+Supported Devices
+------------------
+
+Both Xilinx and Altera devices are currently supported. A binary configuration file and tools
+are provided for the Terasic DE2-115 Development Board, so it is easy to get up and running
+with that board. For other devices, you can modify and compile the correct projects for your
+specific development board.
+
+
+Installation Instructions (for Terasic DE2-115)
 -------------------------
 
 
