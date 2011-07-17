@@ -9,9 +9,7 @@ Features:
 	* Python scripts act as the controller on the PC.
 
 TODO:
-	* Create a proper project file.
-	* Make use of sha256_transform.v and sha-256-functions.v from
-		the normal project (otherwise it's just duplicate code).
+	* Create a proper project file (NOTE: boldport Makefile is provided instead, at the moment)
 
 
 If you found this code useful, please feel free to donate to teknohog:
