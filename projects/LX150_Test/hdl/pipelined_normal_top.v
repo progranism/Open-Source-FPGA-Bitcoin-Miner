@@ -10,7 +10,8 @@
 
 module pipelined_normal_top (CLK_100MHZ);
 
-	parameter LOOP_LOG2 = 5;
+	parameter LOOP_LOG2 = 2;
+
 	localparam [5:0] LOOP = (6'd1 << LOOP_LOG2);
 	localparam [31:0] GOLDEN_NONCE_OFFSET = (32'd1 << (7 - LOOP_LOG2)) + 32'd1;
 
