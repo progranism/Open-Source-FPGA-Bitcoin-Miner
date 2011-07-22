@@ -116,8 +116,14 @@ module sha256_transform #(
 			wire feedback_r;
 			reg feedback_next;
 `ifdef USE_RAM_FOR_KS
-			assign K = Ks_mem[LOOP*cnt+i];
-			assign K_next = Ks_mem[LOOP*cnt+i+1];
+			//assign K = Ks_mem[LOOP*cnt+i];
+			assign K = Ks_mem[(NUM_ROUNDS/LOOP)*cnt+i];
+			//assign K_next = Ks_mem[LOOP*cnt+i+1];
+			//assign K_next = Ks_mem[(NUM_ROUNDS/LOOP)*cnt+i+1];
+			if(i & 1)
+				assign K_next = Ks_mem[(NUM_ROUNDS/LOOP)*!cnt[0]+i+1];
+			else
+				assign K_next = Ks_mem[(NUM_ROUNDS/LOOP)*cnt+i+1];
 `else
 			assign K = Ks[32*(63-(NUM_ROUNDS/LOOP)*((cnt+64-i)&(LOOP-1))-i) +: 32];
 			assign K_next = Ks[32*(63-(NUM_ROUNDS/LOOP)*((cnt+64-i)&(LOOP-1))-i-1) +: 32];
