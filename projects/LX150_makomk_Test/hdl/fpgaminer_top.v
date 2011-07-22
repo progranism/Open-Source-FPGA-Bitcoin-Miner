@@ -1,14 +1,28 @@
 /*
 *
-* Copyright (c) 2011 fpgaminer@bitcoin-miner.com
-* All Rights Reserved
+* Copyright (c) 2011 fpgaminer@bitcoin-mining.com
 *
+*
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
 
 `timescale 1ns/1ps
 
-module pipelined_normal_top (CLK_100MHZ);
+module fpgaminer_top (CLK_100MHZ);
 
 	parameter LOOP_LOG2 = 1;
 
@@ -20,7 +34,7 @@ module pipelined_normal_top (CLK_100MHZ);
 
 	//// 
 	reg [255:0] state = 0;
-	reg [511:0] data = 0;
+	reg [127:0] data = 0;
 	reg [31:0] nonce = 32'h0;
 
 
@@ -36,15 +50,15 @@ module pipelined_normal_top (CLK_100MHZ);
 	reg [5:0] cnt = 6'd0;
 	reg feedback = 1'b0;
 
-	sha256_transform #(.LOOP(LOOP)) uut (
+	sha256_transform #(.LOOP(LOOP), .NUM_ROUNDS(64)) uut (
 		.clk(hash_clk),
 		.feedback(feedback),
 		.cnt(cnt),
 		.rx_state(state),
-		.rx_input(data),
+		.rx_input({384'h000002800000000000000000000000000000000000000000000000000000000000000000000000000000000080000000, data}),
 		.tx_hash(hash)
 	);
-	sha256_transform #(.LOOP(LOOP)) uut2 (
+	sha256_transform #(.LOOP(LOOP), .NUM_ROUNDS(LOOP == 1 ? 61 : 64)) uut2 (
 		.clk(hash_clk),
 		.feedback(feedback),
 		.cnt(cnt),
@@ -79,16 +93,13 @@ module pipelined_normal_top (CLK_100MHZ);
 	wire [5:0] cnt_next;
 	wire [31:0] nonce_next;
 	wire feedback_next;
-	wire reset = 1'b0;
 
-	assign cnt_next =  reset ? 6'd0 : (LOOP == 1) ? 6'd0 : (cnt + 6'd1) & (LOOP-1);
+	assign cnt_next =  (LOOP == 1) ? 6'd0 : (cnt + 6'd1) & (LOOP-1);
 	// On the first count (cnt==0), load data from previous stage (no feedback)
 	// on 1..LOOP-1, take feedback from current stage
 	// This reduces the throughput by a factor of (LOOP), but also reduces the design size by the same amount
 	assign feedback_next = (LOOP == 1) ? 1'b0 : (cnt_next != {(LOOP_LOG2){1'b0}});
-	assign nonce_next =
-		reset ? 32'd0 :
-		feedback_next ? nonce : (nonce + 32'd1);
+	assign nonce_next = feedback_next ? nonce : (nonce + 32'd1);
 	
 	always @ (posedge hash_clk)
 	begin
@@ -107,7 +118,7 @@ module pipelined_normal_top (CLK_100MHZ);
 
 		// Give new data to the hasher
 		state <= midstate_buf;
-		data <= {384'h000002800000000000000000000000000000000000000000000000000000000000000000000000000000000080000000, nonce_next, data_buf[95:0]};
+		data <= {nonce_next, data_buf[95:0]};
 		nonce <= nonce_next;
 
 
