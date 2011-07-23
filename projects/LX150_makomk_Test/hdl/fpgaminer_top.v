@@ -24,7 +24,7 @@
 
 module fpgaminer_top (CLK_100MHZ);
 
-	parameter LOOP_LOG2 = 1;
+	parameter LOOP_LOG2 = 0;
 
 	localparam [5:0] LOOP = (6'd1 << LOOP_LOG2);
 	localparam [31:0] GOLDEN_NONCE_OFFSET = (32'd1 << (7 - LOOP_LOG2)) + 32'd1;
@@ -127,12 +127,16 @@ module fpgaminer_top (CLK_100MHZ);
 
 
 		// Check to see if the last hash generated is valid.
-		is_golden_ticket <= (hash2[255:224] == 32'h00000000) && feedback_d1;
+		if (LOOP == 1)
+			is_golden_ticket <= (hash2[159:128] + 32'h5be0cd19 == 32'h00000000);
+		else
+			is_golden_ticket <= (hash2[255:224] == 32'h00000000) && !feedback;
+		
 		if(is_golden_ticket)
 		begin
 			// TODO: Find a more compact calculation for this
 			if (LOOP == 1)
-				golden_nonce <= nonce - 32'd131;
+				golden_nonce <= nonce - 32'd128;
 			else if (LOOP == 2)
 				golden_nonce <= nonce - 32'd66;
 			else

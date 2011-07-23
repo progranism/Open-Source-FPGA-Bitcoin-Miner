@@ -9,7 +9,7 @@ module test_fpgaminer_top ();
 
 	reg clk = 1'b0;
 
-	fpgaminer_top # (.LOOP_LOG2(1)) uut (clk);
+	fpgaminer_top uut (clk);
 
 
 	reg [31:0] cycle = 32'd0;
