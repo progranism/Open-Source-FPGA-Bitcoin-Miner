@@ -24,7 +24,7 @@
 
 module fpgaminer_top (CLK_100MHZ);
 
-	parameter LOOP_LOG2 = 0;
+	parameter LOOP_LOG2 = 1;
 
 	localparam [5:0] LOOP = (6'd1 << LOOP_LOG2);
 	localparam [31:0] GOLDEN_NONCE_OFFSET = (32'd1 << (7 - LOOP_LOG2)) + 32'd1;
