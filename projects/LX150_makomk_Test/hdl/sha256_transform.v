@@ -22,13 +22,6 @@
 
 // Tweakable options. You can enable these in the project settings.
 
-// We can implement K[s] as memory (read-only RAM).
-// This is mostly useful on Xilinx ISE's xst synthesis tool, which interprets
-// the other way of implementing K[s] very strangely and inefficiently.
-// Note that this still doesn't allow block RAM to be used!
-
-`define USE_RAM_FOR_KS
-
 // On Altera FPGAs, we can use the altshift_taps macro to store W in
 // RAM-based shift registers. Alternatively, the optimiser can do this
 // for you instead if it's behaving itself properly, but that won't
@@ -91,21 +84,12 @@ module sha256_transform #(
 		32'h90befffa, 32'ha4506ceb, 32'hbef9a3f7, 32'hc67178f2};
 
 
-	genvar i;
+	genvar i, j;
 	
 	reg [255:0] state_fb;
 	reg [511:0] w_fb;
 	reg [31:0] t1_part_fb;
 		
-`ifdef USE_RAM_FOR_KS
-	wire [31:0] Ks_mem[0:63];
-	generate
-		for (i = 0; i < 64; i = i + 1) begin : KS_RAM_INIT
-			assign Ks_mem[i] = Ks[32*(63-i) +: 32];
-		end
-	endgenerate
-`endif
-
 	generate
 
 		for (i = 0; i < NUM_ROUNDS/LOOP; i = i + 1) begin : HASHERS
@@ -115,20 +99,17 @@ module sha256_transform #(
 			wire [31:0] t1_part_next;
 			wire feedback_r;
 			reg feedback_next;
-`ifdef USE_RAM_FOR_KS
-			//assign K = Ks_mem[LOOP*cnt+i];
-			assign K = Ks_mem[(NUM_ROUNDS/LOOP)*cnt+i];
-			//assign K_next = Ks_mem[LOOP*cnt+i+1];
-			//assign K_next = Ks_mem[(NUM_ROUNDS/LOOP)*cnt+i+1];
-			//if(i & 1)
-			//	assign K_next = Ks_mem[(NUM_ROUNDS/LOOP)*!cnt[0]+i+1];
-			//else
-			//	assign K_next = Ks_mem[(NUM_ROUNDS/LOOP)*cnt+i+1];
-			assign K_next = Ks_mem[(NUM_ROUNDS/LOOP)*((cnt+i) & (LOOP-1)) +i+1];
-`else
-			assign K = Ks[32*(63-(NUM_ROUNDS/LOOP)*((cnt+64-i)&(LOOP-1))-i) +: 32];
-			assign K_next = Ks[32*(63-(NUM_ROUNDS/LOOP)*((cnt+64-i)&(LOOP-1))-i-1) +: 32];
-`endif
+			
+			wire [31:0] K_tbl[0:LOOP-1];
+			wire [31:0] K_next_tbl[0:LOOP-1];
+			for (j = 0; j < LOOP; j = j + 1) begin : K_NEXT_TBL_INIT
+				localparam k_next_idx = ((NUM_ROUNDS/LOOP)*((j+64-i)&(LOOP-1))+i+1)&63;
+				assign K_next_tbl[j] = Ks[32*(63-k_next_idx) +: 32];
+				assign K_tbl[j] = Ks[32*(63-(NUM_ROUNDS/LOOP)*((j+64-i)&(LOOP-1))-i) +: 32];
+			end
+			assign K = K_tbl[cnt&(LOOP-1)];
+			assign K_next = K_next_tbl[cnt&(LOOP-1)];
+
 			wire [31:0] cur_w0, cur_w1, cur_w9, cur_w14;
 			reg [479:0] new_w14to0;
 			if(LOOP <= 4)
