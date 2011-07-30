@@ -201,7 +201,7 @@ module sha256_transform #(
 					.clk(clk),
 					.k_next(K_next),
 					.rx_state(feedback ? state_fb : rx_state),
-					.rx_t1_part(feedback ? t1_part_fb : (rx_state[`IDX(7)] + cur_w0 + K)),
+					.rx_t1_part(feedback ? t1_part_fb : (rx_state[`IDX(7)] + rx_input[31:0] + K)),
 					.rx_w1(cur_w1),
 					.tx_state(state),
 					.tx_t1_part(t1_part_next)
