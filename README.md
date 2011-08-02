@@ -83,17 +83,7 @@ Installation Instructions (for Terasic DE2-115)
 1) *IMPORTANT*: Please remove the clear acrylic cover on your DE2-115 board. This will restrict
 air flow and may cause the chip to overheat.
 
-2) Navigate to 'scripts/mine' and EDIT 'mine.tcl' (open in Notepad or other text editor)
-
-3) Locate the following lines:
-
-    set url "http://btcguild.com:8332"
-    set userpass "youremailhere@example.com:yourpasswordhere"
-
-
-Edit accordingly (N.B. the script has only been tested with btcguild and deepbit so far).
-
-4) Save and close 'mine.tcl'
+2) Navigate to 'scripts/mine' and follow the instructions in 'config.example.tcl' (open in Notepad or other text editor)
 
 ####Do these each time you want to run the miner:
 
@@ -112,7 +102,7 @@ Once programming has succeeded, the DE2-115 is now ready to mine!
 
 5) Run 'mine.bat'
 
-6) If working correctly, 'mine.bat' will leave a console window open which will fill with diagnostic information as it runs.
+6) If working correctly, 'mine.bat' will leave a console window open where it reports hashing rate, estimated hashing rate and accepted/rejected share information.
 
 7) Profit!
 
