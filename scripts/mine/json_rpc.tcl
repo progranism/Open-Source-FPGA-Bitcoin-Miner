@@ -6,7 +6,7 @@ package require base64
 proc do_rpc_request {url userpass request} {
 	set headers [list "Authorization" "Basic $userpass"]
 
-	set token [::http::geturl $url -query $request -headers $headers -type "application/json"]
+	set token [::http::geturl $url -query $request -headers $headers -type "application/json" -timeout 5000]
 
 	set data [::http::data $token]
 	::http::cleanup $token
