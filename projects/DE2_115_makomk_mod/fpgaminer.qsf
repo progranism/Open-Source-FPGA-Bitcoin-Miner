@@ -49,7 +49,7 @@ set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "2.5 V"
 set_location_assignment PIN_Y2 -to osc_clk
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to osc_clk
 set_global_assignment -name ENABLE_SIGNALTAP OFF
-set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "NO HEAT SINK WITH 400 LFPM AIRFLOW"
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "NO HEAT SINK WITH STILL AIR"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 set_global_assignment -name ALLOW_ANY_RAM_SIZE_FOR_RECOGNITION ON
 set_global_assignment -name ALLOW_ANY_SHIFT_REGISTER_SIZE_FOR_RECOGNITION ON
