@@ -20,16 +20,11 @@
 ##
 
 
-## TODO: Probe for Hardware and Device names and allow user to select.
-## TODO: Allow user to enter username/password pairs and pool server info.
-## TDOO: Save user configurations to a file and load on start.
-## TODO: Log JSON-RPC information to a file instead of spitting it into the console, or make it a --verbose option.
 ## TODO: Long polling.
-## TODO: Use the NONC virtual wire to measure hashrate.
+## TODO: --verbose option for debugging issues.
+## TODO: Handle multiple FPGAs at once.
 
 
-#package ifneeded TclCurl 7.19.6 [list load TclCurl7196.dll]\n[list source tclcurl.tcl]
-#package require TclCurl
 package require http
 package require json
 package require base64
@@ -147,13 +142,15 @@ proc submit_nonce {workl golden_nonce} {
 puts " --- FPGA Mining Tcl Script --- \n\n"
 
 
-puts "Looking for and preparing FPGAs..."
-if [catch {fpga_init} exc] {
-	puts stderr "ERROR: Unable to find any suitable FPGAs. Please make sure your FPGA is connected to the computer, on, and has been loaded with mining firmware."
-	puts stderr "\nError Message was:\n$exc"
+puts "Looking for and preparing FPGAs...\n"
+if {[fpga_init] == -1} {
+	puts stderr "No mining FPGAs found."
 	puts "\n\n --- Shutting Down --- \n\n"
 	exit
 }
+
+set fpga_name [get_fpga_name]
+puts "Mining FPGA Found: $fpga_name\n\n"
 
 if {[get_current_fpga_nonce] == -1} {
 	puts "WARNING: The FPGA's mining firmware does not report a hashrate. Status messages will show 0.00 MH/s, but the FPGA should still be running. Check the estimated rate for approximate hashing rate after shares have been submitted.\n\n"
@@ -198,6 +195,9 @@ while {1} {
 
 	submit_nonce [array get work] $golden_nonce
 }
+
+
+puts "\n\n --- Shutting Down --- \n\n"
 
 
 
