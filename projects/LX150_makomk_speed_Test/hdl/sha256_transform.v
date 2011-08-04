@@ -118,18 +118,6 @@ module sha256_transform #(
 			else
 				shifter_32b #(.LENGTH(8)) shift_w1 (clk, HASHERS[i-8].cur_w9, cur_w1);
 				
-				
-			if(i == 0)
-			begin
-				assign cur_w14 = delay_input[479:448];
-			end
-			else if(i == 1)
-			begin
-				shifter_32b #(.LENGTH(1)) shift_w14 (clk, delay_input[511:480], cur_w14);
-			end
-			else
-				shifter_32b #(.LENGTH(1)) shift_w14 (clk, HASHERS[i-2].new_w15, cur_w14);
-				
 			if(i == 0)
 			begin
 				assign cur_w9 = delay_input[319:288];
@@ -138,8 +126,20 @@ module sha256_transform #(
 			begin
 				shifter_32b #(.LENGTH(i)) shift_w9 (clk, delay_input[`IDX(9+i)], cur_w9);
 			end
-			else
+			else if (i <= (NUM_ROUNDS - 9))		// i <= 55 if NUM_ROUNDS=64
 				shifter_32b #(.LENGTH(5)) shift_w9 (clk, HASHERS[i-5].cur_w14, cur_w9);
+
+			if(i == 0)
+			begin
+				assign cur_w14 = delay_input[479:448];
+			end
+			else if(i == 1)
+			begin
+				shifter_32b #(.LENGTH(1)) shift_w14 (clk, delay_input[511:480], cur_w14);
+			end
+			else if (i <= (NUM_ROUNDS - 14))	// i <= 50 if NUM_ROUNDS=64
+				shifter_32b #(.LENGTH(1)) shift_w14 (clk, HASHERS[i-2].new_w15, cur_w14);
+
 
 			if(i == 0)
 				sha256_digester U (
@@ -161,14 +161,18 @@ module sha256_transform #(
 					.tx_state(state),
 					.tx_t1_part(t1_part_next)
 				);
-			sha256_update_w upd_w (
-				.clk(clk),
-				.rx_w0(cur_w0),
-				.rx_w1(cur_w1),
-				.rx_w9(cur_w9),
-				.rx_w14(cur_w14),
-				.tx_w15(new_w15)
-			);
+
+			if (i <= (NUM_ROUNDS - 16))	// i <= 48 if NUM_ROUNDS=64
+			begin
+				sha256_update_w upd_w (
+					.clk(clk),
+					.rx_w0(cur_w0),
+					.rx_w1(cur_w1),
+					.rx_w9(cur_w9),
+					.rx_w14(cur_w14),
+					.tx_w15(new_w15)
+				);
+			end
 		end
 
 	endgenerate
@@ -276,16 +280,26 @@ module shifter_32b #(
 generate
 `ifdef USE_XILINX_BRAM_FOR_W
 	if(LENGTH >= 8) begin
+		// Infer RAM
+		// RAM's output registered by r (included for free in Xilinx's
+		// RAM primitives).
+		// NOTE: Added out0 and out1. Since r is inside the
+		// RAM primative, it doesn't help routing from the RAM to the
+		// target slices. out0 and out1 should be flip-flops and mask RAM
+		// routing.
 		reg [7:0] addr = 0;
-		reg [31:0] r; 
-		reg [31:0] m[0:(LENGTH-2)];
+		reg [31:0] r, out0, out1;
+		reg [31:0] m[0:(LENGTH-4)];
 		always @ (posedge clk)
 		begin
-			addr <= (addr + 1) % (LENGTH - 1);
+			addr <= (addr + 1) % (LENGTH - 3);
 			r <= m[addr];
 			m[addr] <= val_in;
+
+			out0 <= r;
+			out1 <= out0;
 		end
-		assign val_out = r;
+		assign val_out = out1;
 	end else begin
 `endif
 		reg [32 * LENGTH - 1:0] r;
