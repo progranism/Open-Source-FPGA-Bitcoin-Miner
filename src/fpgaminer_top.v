@@ -25,12 +25,12 @@
 module fpgaminer_top (osc_clk);
 
 	// The LOOP_LOG2 parameter determines how unrolled the SHA-256
-	// calculations are. For example, a setting of 1 will completely
-	// unroll the calculations, resulting in 128 rounds and a large, fast
-	// design.
+	// calculations are. For example, a setting of 0 will completely
+	// unroll the calculations, resulting in 128 rounds and a large, but
+	// fast design.
 	//
-	// A setting of 2 will result in 64 rounds, with half the size and
-	// half the speed. 3 will be 32 rounds, with 1/4th the size and speed.
+	// A setting of 1 will result in 64 rounds, with half the size and
+	// half the speed. 2 will be 32 rounds, with 1/4th the size and speed.
 	// And so on.
 	//
 	// Valid range: [0, 5]
