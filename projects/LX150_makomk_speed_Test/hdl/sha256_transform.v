@@ -300,7 +300,19 @@ generate
 			out1 <= out0;
 		end
 		assign val_out = out1;
-	end else begin
+	end
+	else if (LENGTH == 5) begin
+		reg [32 * 4 - 1:0] r;
+		(* KEEP = "TRUE" *) reg [31:0] out0;	// Force an extra register, otherwise it may get consumed into a shift register.
+		always @ (posedge clk)
+		begin
+			r <= (r << 32) | val_in;
+			out0 <= r[32 * 4 - 1:32 * 3];
+		end
+
+		assign val_out = out0;
+	end
+	else begin
 `endif
 		reg [32 * LENGTH - 1:0] r;
 		always @ (posedge clk)
