@@ -95,7 +95,7 @@ module main_pll
   DCM_SP
   #(.CLKDV_DIVIDE          (2.000),
     .CLKFX_DIVIDE          (10),
-    .CLKFX_MULTIPLY        (9),
+    .CLKFX_MULTIPLY        (5),
     .CLKIN_DIVIDE_BY_2     ("FALSE"),
     .CLKIN_PERIOD          (10.0),
     .CLKOUT_PHASE_SHIFT    ("NONE"),

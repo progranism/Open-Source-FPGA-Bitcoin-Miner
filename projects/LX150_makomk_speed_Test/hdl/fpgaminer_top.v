@@ -44,7 +44,7 @@ module fpgaminer_top (
 	//// Hashers
 	wire [255:0] hash, hash2;
 
-	/*sha256_transform #(.NUM_ROUNDS(64)) uut (
+	sha256_transform #(.NUM_ROUNDS(64)) uut (
 		.clk(hash_clk),
 		.rx_state(state),
 		.rx_input({384'h000002800000000000000000000000000000000000000000000000000000000000000000000000000000000080000000, data}),
@@ -55,12 +55,10 @@ module fpgaminer_top (
 		.rx_state(256'h5be0cd191f83d9ab9b05688c510e527fa54ff53a3c6ef372bb67ae856a09e667),
 		.rx_input({256'h0000010000000000000000000000000000000000000000000000000080000000, hash}),
 		.tx_hash(hash2)
-	);*/
+	);
 
 
 	//// Virtual Wire Control
-	//reg [255:0] midstate_buf = 0, data_buf = 0;
-	//wire [255:0] midstate_vw, data2_vw;
 	wire [255:0] comm_midstate;
 	wire [95:0] comm_data;
 	reg old_is_golden_ticket = 1'b0;
@@ -74,20 +72,6 @@ module fpgaminer_top (
 		.tx_midstate(comm_midstate),
 		.tx_data(comm_data)
 	);
-
-	//wire [35:0] control0, control1, control2;
-	//chipscope_icon ICON_inst ( .CONTROL0(control0), .CONTROL1(control1), .CONTROL2(control2));
-	
-	//chipscope_vio_tochip midstate_vw_blk ( .CONTROL(control0), .CLK(hash_clk), .SYNC_OUT(midstate_vw) );
-	//chipscope_vio_tochip data_vw_blk ( .CONTROL(control1), .CLK(hash_clk), .SYNC_OUT(data2_vw) );
-`endif
-
-
-	//// Virtual Wire Output
-	//reg [31:0] golden_nonce = 0;
-
-`ifndef SIM
-	//chipscope_vio_fromchip golden_nonce_vw_blk ( .CONTROL(control2), .CLK(hash_clk), .SYNC_IN(golden_nonce) );
 `endif
 
 
@@ -97,7 +81,7 @@ module fpgaminer_top (
 
 	assign nonce_next = nonce + 32'd1;
 
-	assign hash2[159:128] = state[31:0] ^ state[63:32] ^ state[95:64] ^ state[127:96] ^ state[159:128] ^ state[191:160] ^ state[223:192] ^ state[255:224] ^ data[31:0] ^ data[63:32] ^ data[95:64] ^ data[127:96];
+	//assign hash2[159:128] = state[31:0] ^ state[63:32] ^ state[95:64] ^ state[127:96] ^ state[159:128] ^ state[191:160] ^ state[223:192] ^ state[255:224] ^ data[31:0] ^ data[63:32] ^ data[95:64] ^ data[127:96];
 	
 	always @ (posedge hash_clk)
 	begin
