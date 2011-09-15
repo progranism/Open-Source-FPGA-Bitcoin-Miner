@@ -27,7 +27,7 @@ module comm (
 
 	jtag_fifo jtag_fifo_blk (
 		.rx_clk (hash_clk),
-		.rx_data (golden_out[7:0]),
+		.rx_data ({golden_count, golden_out[7:0]}),
 		.wr_en (golden_writing & ~full),
 		.rd_en (read),
 		.tx_data (jtag_data),

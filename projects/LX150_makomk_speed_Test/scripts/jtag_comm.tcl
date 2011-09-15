@@ -94,16 +94,16 @@ proc push_work_to_fpga {workl} {
 			}
 
 			if {$i == 0} {
-				set tx_data "0$tx_data"
+				set tx_data "00$tx_data"
 			} else {
-				set tx_data "1$tx_data"
+				set tx_data "01$tx_data"
 			}
 
 			#puts "SEND: $tx_data"
 
-			set rx_data [csejtag_tap shift_device_dr $jtag_handle $fpga_deviceIndex $CSEJTAG_SHIFT_READWRITE $CSEJTAG_RUN_TEST_IDLE 0 9 $tx_data]
+			set rx_data [csejtag_tap shift_device_dr $jtag_handle $fpga_deviceIndex $CSEJTAG_SHIFT_READWRITE $CSEJTAG_RUN_TEST_IDLE 0 13 $tx_data]
 
-			#puts "RECV: $rx_data"
+			puts "RECV: $rx_data"
 		}
 		
 	} result]} {
@@ -153,14 +153,14 @@ proc get_result_from_fpga {} {
 		csejtag_tap shift_device_ir $jtag_handle $fpga_deviceIndex $CSEJTAG_SHIFT_READWRITE $CSEJTAG_RUN_TEST_IDLE 0 6 $USER_NUM
 
 		for {set i 0} {$i < 4} {incr i} {
-			set tx_data "000"
+			set tx_data "0000"
 
-			set rx_data [csejtag_tap shift_device_dr $jtag_handle $fpga_deviceIndex $CSEJTAG_SHIFT_READWRITE $CSEJTAG_RUN_TEST_IDLE 0 9 $tx_data]
+			set rx_data [csejtag_tap shift_device_dr $jtag_handle $fpga_deviceIndex $CSEJTAG_SHIFT_READWRITE $CSEJTAG_RUN_TEST_IDLE 0 13 $tx_data]
 
 			#puts "RECV: $rx_data"
 			set rx_data [expr 0x$rx_data]
 
-			if {$rx_data >= 0x100} {
+			if {$rx_data >= 0x1000} {
 				if {$golden_nonce == -1} {
 					set golden_nonce 0
 				}
