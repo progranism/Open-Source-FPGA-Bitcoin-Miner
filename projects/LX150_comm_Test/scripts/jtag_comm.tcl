@@ -75,49 +75,15 @@ proc push_work_to_fpga {workl} {
 	set data [string range [reverseHex $work(data)] 104 127]
 	set hexdata "${midstate}${data}"
 
-	set cablelock [csejtag_target lock $jtag_handle 5000]
-    	if {$cablelock != $CSEJTAG_LOCKED_ME} {
-        	csejtag_session send_message $jtag_handle $CSE_MSG_ERROR "cse_lock_target failed"
-		csejtag_target close $jtag_handle
-        	return
+	for {set i 0} {$i < 11} {incr i} {
+		set tx_data [string range $hexdata [expr {$i*8}] [expr {$i*8+7}]]
+		set tx_data [reverseHex $tx_data]
+		set addr [expr {$i + 1}]
+
+		puts "TX_DATA: $tx_data"
+
+		write_fpga_register $addr "0x$tx_data"
 	}
-
-	if {[catch {
-
-		csejtag_tap shift_device_ir $jtag_handle $fpga_deviceIndex $CSEJTAG_SHIFT_READWRITE $CSEJTAG_RUN_TEST_IDLE 0 6 $USER_NUM
-
-		for {set i 0} {$i < 45} {incr i} {
-			if {$i >= 44} {
-				set tx_data "FF"
-			} else {
-				set tx_data [string range $hexdata [expr {$i*2}] [expr {$i*2+1}]]
-			}
-
-			if {$i == 0} {
-				set tx_data "00$tx_data"
-			} else {
-				set tx_data "01$tx_data"
-			}
-
-			#puts "SEND: $tx_data"
-
-			set rx_data [csejtag_tap shift_device_dr $jtag_handle $fpga_deviceIndex $CSEJTAG_SHIFT_READWRITE $CSEJTAG_RUN_TEST_IDLE 0 13 $tx_data]
-
-			#puts "RECV: $rx_data"
-		}
-		
-	} result]} {
-		global errorCode
-		global errorInfo
-		puts stderr "\nCaught error: $result"
-		puts stderr "**** Error Code ***"
-		puts stderr $errorCode
-		puts stderr "**** Tcl Trace ****"
-		puts stderr $errorInfo
-		puts stderr "*******************"
-	}
-
-	csejtag_target unlock $jtag_handle
 }
 
 

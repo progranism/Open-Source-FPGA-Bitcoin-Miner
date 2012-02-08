@@ -59,10 +59,10 @@ module fpgaminer_top (
 
 	//// ZTEX Hashers
 	// Counter for testing
-	reg [31:0] hash = 32'd0;
+	reg [31:0] hash2_w = 32'd0;
 
 	always @ (posedge hash_clk)
-		hash <= hash + 32'd1;
+		hash2_w <= nonce ^ midstate[31:0] ^ midstate[63:32] ^ midstate[95:64] ^ midstate[127:96] ^ midstate[159:128] ^ midstate[191:160] ^ midstate[223:192] ^ midstate[255:224] ^ data[31:0] ^ data[63:32] ^ data[95:64];
 
 
 	//// Communication Module
@@ -74,7 +74,8 @@ module fpgaminer_top (
 `ifndef SIM
 	jtag_comm # (
 		.INPUT_FREQUENCY (100),
-		.MAXIMUM_FREQUENCY (200)
+		.MAXIMUM_FREQUENCY (200),
+		.INITIAL_FREQUENCY (50)
 	) comm_blk (
 		.rx_hash_clk (hash_clk),
 		.rx_new_nonce (old_is_golden_ticket),
@@ -103,15 +104,15 @@ module fpgaminer_top (
 
 
 		// Check to see if the last hash generated is valid.
-		//is_golden_ticket <= hash2_w == 32'hA41F32E7;
-		//old_is_golden_ticket <= is_golden_ticket;
+		is_golden_ticket <= hash2_w == 32'hA41F32E7;
+		old_is_golden_ticket <= is_golden_ticket;
 		
-		//if(is_golden_ticket)
-			//golden_nonce <= nonce2;
+		if(is_golden_ticket)
+			golden_nonce <= nonce2;
 
 		// For testing the dynamic clock
-		golden_nonce <= hash;
-		old_is_golden_ticket <= 1'b1;
+		//golden_nonce <= hash;
+		//old_is_golden_ticket <= 1'b1;
 	end
 
 endmodule

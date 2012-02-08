@@ -53,6 +53,10 @@
 //
 //
 // ----------------------------------------------------------------------------
+// NOTE: Writing to 0xB will cause midstate+data to latch to the mining core.
+// So, when you're writing a new job, make sure that's the last thing you
+// write.
+//
 // NOTE: On the controller side of things, it would be best to keep track of
 // a history of at least one midstate+data. When a Golden Nonce is read, it
 // may belong to an older midstate+data. Simply perform a SHA256 hash on the
@@ -79,17 +83,17 @@
 // 0x8:		midstate[255:224]
 // 0x9:		data[31:0]
 // 0xA:		data[63:32]
-// 0xB:		data[95:64]
+// 0xB:		data[95:64]; Writing here also causes midstate+data to latch.
 // 0xC:		--
 // 0xD:		Clock Configuration (0x000000MM)
 // 0xE:		Golden Nonce
 // 0xF:		--
 
 // TODO: Perhaps we should calculate a checksum for returned data?
-// TODO: Shouldn't there be a latch on the midstate+data?
 module jtag_comm # (
 	parameter INPUT_FREQUENCY = 100,
-	parameter MAXIMUM_FREQUENCY = 200
+	parameter MAXIMUM_FREQUENCY = 200,
+	parameter INITIAL_FREQUENCY = 50
 ) (
 	input rx_hash_clk,
 	input rx_new_nonce,
@@ -104,9 +108,10 @@ module jtag_comm # (
 );
 
 	// Configuration data
+	reg [351:0] current_job = 352'd0;
 	reg [255:0] midstate = 256'd0;
 	reg [95:0] data = 96'd0;
-	reg [31:0] clock_config = 32'd100;
+	reg [31:0] clock_config = INITIAL_FREQUENCY;
 
 	// JTAG
 	wire jt_capture, jt_drck, jt_reset, jt_sel, jt_shift, jt_tck, jt_tdi, jt_update;
@@ -216,19 +221,22 @@ module jtag_comm # (
 					4'hD: clock_config <= dr[31:0];
 				endcase
 			end
+
+			if (jtag_we && jtag_addr == 4'hB)
+				current_job <= {dr[31:0], data[63:0], midstate};
 		end
 	end
 
 
 	// Output: Metastability Protection
-	// This should be sufficient for the midstate and state signals,
+	// This should be sufficient for the midstate and data signals,
 	// because they rarely (relative to the clock) change and come
 	// from a slower clock domain.
 	reg [351:0] tx_buffer;
 
 	always @ (posedge rx_hash_clk)
 	begin
-		tx_buffer <= {data, midstate};
+		tx_buffer <= current_job;
 		{tx_data, tx_midstate} <= tx_buffer;
 	end
 
@@ -237,7 +245,7 @@ module jtag_comm # (
 	// The DCM is configured with a SPI-like interface.
 	// We implement a basic state machine based around a SPI cycle counter
 	localparam MAXIMUM_FREQUENCY_MULTIPLIER = MAXIMUM_FREQUENCY >> 1;
-	reg [7:0] dcm_multiplier = 8'd50, current_dcm_multiplier = 8'd0;
+	reg [7:0] dcm_multiplier = INITIAL_FREQUENCY >> 1, current_dcm_multiplier = 8'd0;
 	reg [15:0] dcm_config_buf;
 	reg [4:0] dcm_progstate = 5'd31;
 	reg [15:0] dcm_data;
