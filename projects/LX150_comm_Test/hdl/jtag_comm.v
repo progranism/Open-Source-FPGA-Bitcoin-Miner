@@ -189,7 +189,7 @@ module jtag_comm # (
 				4'hA: dr[31:0] <= data[63:32];
 				4'hB: dr[31:0] <= data[95:64];
 				4'hC: dr[31:0] <= 32'h55555555;
-				4'hD: clock_config <= dr[31:0];
+				4'hD: dr[31:0] <= clock_config;
 				4'hE: dr[31:0] <= fifo_data_valid ? tck_golden_nonce : 32'h00000000;
 				4'hF: dr[31:0] <= 32'h00000000;
 			endcase

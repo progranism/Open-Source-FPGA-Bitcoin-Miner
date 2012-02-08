@@ -34,7 +34,8 @@ module fpgaminer_top (
 	//// 
 	reg [255:0] midstate = 0;
 	reg [95:0] data = 0;
-	reg [31:0] nonce = 32'd254, nonce2 = 32'h0;
+	reg [31:0] nonce = 32'd254, nonce2 = 32'd0;
+	reg [31:0] stop_nonce = 32'd0;
 
 
 	//// PLL
@@ -93,26 +94,32 @@ module fpgaminer_top (
 
 	//// Control Unit
 	reg is_golden_ticket = 1'b0;
+
+	// If we've checked every nonce without getting new work, then stop hashing.
+	reg comm_new_work = 1'b0;
+	wire continue_hashing = nonce2 != stop_nonce || comm_new_work;
 	
 	always @ (posedge hash_clk)
 	begin
 		// Give new data to the hasher
 		midstate <= comm_midstate;
 		data <= comm_data[95:0];
-		nonce <= nonce + 32'd1;
-		nonce2 <= nonce2 + 32'd1;
+		nonce <= nonce + (continue_hashing ? 32'd1 : 32'd0);
+		nonce2 <= nonce2 + (continue_hashing ? 32'd1 : 32'd0);
 
 
 		// Check to see if the last hash generated is valid.
-		is_golden_ticket <= hash2_w == 32'hA41F32E7;
+		is_golden_ticket <= hash2_w == 32'hA41F32E7 && continue_hashing;
 		old_is_golden_ticket <= is_golden_ticket;
 		
 		if(is_golden_ticket)
 			golden_nonce <= nonce2;
 
-		// For testing the dynamic clock
-		//golden_nonce <= hash;
-		//old_is_golden_ticket <= 1'b1;
+		// Reset stop_nonce when we get new work
+		comm_new_work <= midstate != comm_midstate || data != comm_data;
+
+		if (comm_new_work)
+			stop_nonce <= nonce2;
 	end
 
 endmodule
