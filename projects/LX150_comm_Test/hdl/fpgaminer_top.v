@@ -27,6 +27,13 @@ module fpgaminer_top (
 	input CLK_100MHZ
 );
 
+	//// Configuration Options
+	localparam INPUT_CLOCK_FREQUENCY = 100;
+	localparam SYNTHESIS_FREQUENCY = 50;
+	localparam BOOTUP_FREQUENCY = 50;
+	localparam MAXIMUM_FREQUENCY = 50;
+
+
 	//// Clock Buffer
 	wire clkin_100MHZ;
 	IBUFG clkin1_buf ( .I (CLK_100MHZ), .O (clkin_100MHZ));
@@ -43,8 +50,8 @@ module fpgaminer_top (
 	wire dcm_progdata, dcm_progen, dcm_progdone;
 `ifndef SIM
 	dynamic_clock # (
-		.INPUT_FREQUENCY (100),
-		.SYNTHESIS_FREQUENCY (200)
+		.INPUT_FREQUENCY (INPUT_CLOCK_FREQUENCY),
+		.SYNTHESIS_FREQUENCY (SYNTHESIS_FREQUENCY)
 	) dynamic_clk_blk (
 		.CLK_IN1 (clkin_100MHZ),
 		.CLK_OUT1 (hash_clk),
@@ -59,11 +66,22 @@ module fpgaminer_top (
 
 
 	//// ZTEX Hashers
-	// Counter for testing
-	reg [31:0] hash2_w = 32'd0;
+	wire [255:0] hash;
+	wire [31:0] hash2_w;
 
-	always @ (posedge hash_clk)
-		hash2_w <= nonce ^ midstate[31:0] ^ midstate[63:32] ^ midstate[95:64] ^ midstate[127:96] ^ midstate[159:128] ^ midstate[191:160] ^ midstate[223:192] ^ midstate[255:224] ^ data[31:0] ^ data[63:32] ^ data[95:64];
+	sha256_pipe130 p1 (
+		.clk (hash_clk),
+		.state (midstate),
+		.state2 (midstate),
+		.data ({384'h000002800000000000000000000000000000000000000000000000000000000000000000000000000000000080000000, nonce, data}),
+		.hash (hash)
+	);
+
+	sha256_pipe123 p2 (
+		.clk (hash_clk),
+		.data ({256'h0000010000000000000000000000000000000000000000000000000080000000, hash}),
+		.hash (hash2_w)
+	);
 
 
 	//// Communication Module
@@ -74,9 +92,9 @@ module fpgaminer_top (
 
 `ifndef SIM
 	jtag_comm # (
-		.INPUT_FREQUENCY (100),
-		.MAXIMUM_FREQUENCY (200),
-		.INITIAL_FREQUENCY (50)
+		.INPUT_FREQUENCY (INPUT_CLOCK_FREQUENCY),
+		.MAXIMUM_FREQUENCY (MAXIMUM_FREQUENCY),
+		.INITIAL_FREQUENCY (BOOTUP_FREQUENCY)
 	) comm_blk (
 		.rx_hash_clk (hash_clk),
 		.rx_new_nonce (old_is_golden_ticket),

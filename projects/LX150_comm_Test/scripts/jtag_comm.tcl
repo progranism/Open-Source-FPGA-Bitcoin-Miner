@@ -71,8 +71,10 @@ proc push_work_to_fpga {workl} {
 
 	array set work $workl
 
-	set midstate [reverseHex $work(midstate)]
-	set data [string range [reverseHex $work(data)] 104 127]
+	# [reverseHex $work(midstate)]
+	set midstate $work(midstate)
+	#set data [string range [reverseHex $work(data)] 104 127]
+	set data [string range $work(data) 128 151]
 	set hexdata "${midstate}${data}"
 
 	for {set i 0} {$i < 11} {incr i} {
@@ -80,7 +82,7 @@ proc push_work_to_fpga {workl} {
 		set tx_data [reverseHex $tx_data]
 		set addr [expr {$i + 1}]
 
-		puts "TX_DATA: $tx_data"
+		#puts "TX_DATA: $tx_data"
 
 		write_fpga_register $addr "0x$tx_data"
 	}
@@ -103,54 +105,13 @@ proc get_result_from_fpga {} {
 	global CSEJTAG_RUN_TEST_IDLE
 	global USER_NUM
 
-	set golden_nonce -1
+	set nonce [read_fpga_register 0xE]
 
-	# Lock the cable
-	set cablelock [csejtag_target lock $jtag_handle 5000]
-    	if {$cablelock != $CSEJTAG_LOCKED_ME} {
-        	csejtag_session send_message $jtag_handle $CSE_MSG_ERROR "cse_lock_target failed"
-		csejtag_target close $jtag_handle
-        	return -1
+	if {$nonce == 0} {
+		return -1
+	} else {
+		return $nonce
 	}
-
-	if {[catch {
-
-		csejtag_tap shift_device_ir $jtag_handle $fpga_deviceIndex $CSEJTAG_SHIFT_READWRITE $CSEJTAG_RUN_TEST_IDLE 0 6 $USER_NUM
-
-		for {set i 0} {$i < 4} {incr i} {
-			set tx_data "0000"
-
-			set rx_data [csejtag_tap shift_device_dr $jtag_handle $fpga_deviceIndex $CSEJTAG_SHIFT_READWRITE $CSEJTAG_RUN_TEST_IDLE 0 13 $tx_data]
-
-			#puts "RECV: $rx_data"
-			set rx_data [expr 0x$rx_data]
-
-			if {$rx_data >= 0x1000} {
-				if {$golden_nonce == -1} {
-					set golden_nonce 0
-				}
-
-				set golden_nonce [expr {$golden_nonce | (($rx_data & 0xFF) << ($i * 8))}]
-			} else {
-				set golden_nonce -1
-				break
-			}
-		}
-	} result]} {
-		global errorCode
-		global errorInfo
-		puts stderr "\nCaught error: $result"
-		puts stderr "**** Error Code ***"
-		puts stderr $errorCode
-		puts stderr "**** Tcl Trace ****"
-		puts stderr $errorInfo
-		puts stderr "*******************"
-	}
-
-	# Unlock the cable
-	csejtag_target unlock $jtag_handle
-
-	return $golden_nonce
 }
 
 
