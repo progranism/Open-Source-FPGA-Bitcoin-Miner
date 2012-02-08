@@ -97,6 +97,8 @@ module fpgaminer_top (
 
 	// If we've checked every nonce without getting new work, then stop hashing.
 	reg comm_new_work = 1'b0;
+	reg [31:0] ignore_results_stop = 32'd254;
+	reg ignore_results = 1'b0;
 	wire continue_hashing = nonce2 != stop_nonce || comm_new_work;
 	
 	always @ (posedge hash_clk)
@@ -109,7 +111,7 @@ module fpgaminer_top (
 
 
 		// Check to see if the last hash generated is valid.
-		is_golden_ticket <= hash2_w == 32'hA41F32E7 && continue_hashing;
+		is_golden_ticket <= hash2_w == 32'hA41F32E7 && continue_hashing && ~ignore_results;
 		old_is_golden_ticket <= is_golden_ticket;
 		
 		if(is_golden_ticket)
@@ -119,7 +121,20 @@ module fpgaminer_top (
 		comm_new_work <= midstate != comm_midstate || data != comm_data;
 
 		if (comm_new_work)
+		begin
 			stop_nonce <= nonce2;
+
+			// Results will be invalid for a period of time if
+			// we stopped the engine and are starting it back up.
+			if (nonce2 == stop_nonce)
+			begin
+				ignore_results <= 1'b1;
+				ignore_results_stop <= nonce2 + 32'd254;
+			end
+		end
+
+		if (nonce2 == ignore_results_stop)
+			ignore_results <= 1'b0;
 	end
 
 endmodule
