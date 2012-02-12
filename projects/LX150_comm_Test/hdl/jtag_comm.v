@@ -64,9 +64,9 @@
 //
 // NOTE: There is a 127 entry FIFO to buffer Golden Nonces.
 //
-// NOTE: When reading the Golden Nonce register, 0x00000000 is used to
+// NOTE: When reading the Golden Nonce register, 0xFFFFFFFF is used to
 // indicate that there is no new Golden Nonce. Because of this, if a Golden
-// Nonce is actually 0x00000000 it will be ignored. This should only cause
+// Nonce is actually 0xFFFFFFFF it will be ignored. This should only cause
 // a loss of 1 in 2**32 Golden Nonces though, so it is not a critical problem.
 //
 //
@@ -141,7 +141,7 @@ module jtag_comm # (
 	// Golden Nonce FIFO: from rx_hash_clk to TCK
 	wire [31:0] tck_golden_nonce;
 	wire fifo_empty, fifo_full;
-	wire fifo_we = rx_new_nonce & (rx_golden_nonce != 32'h00000000) & ~fifo_full;
+	wire fifo_we = rx_new_nonce & (rx_golden_nonce != 32'hFFFFFFFF) & ~fifo_full;
 	wire fifo_rd = checksum_valid & jt_update & ~jtag_we & (jtag_addr == 4'hE) & ~fifo_empty & ~jt_reset;
 	wire jtag_we = dr[36];
 	wire [3:0] jtag_addr = dr[35:32];
@@ -190,7 +190,7 @@ module jtag_comm # (
 				4'hB: dr[31:0] <= data[95:64];
 				4'hC: dr[31:0] <= 32'h55555555;
 				4'hD: dr[31:0] <= clock_config;
-				4'hE: dr[31:0] <= fifo_data_valid ? tck_golden_nonce : 32'h00000000;
+				4'hE: dr[31:0] <= fifo_data_valid ? tck_golden_nonce : 32'hFFFFFFFF;
 				4'hF: dr[31:0] <= 32'h00000000;
 			endcase
 		end

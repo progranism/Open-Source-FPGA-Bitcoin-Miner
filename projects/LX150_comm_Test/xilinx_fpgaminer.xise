@@ -333,7 +333,7 @@
     <property xil_pn:name="Use Synchronous Set" xil_pn:value="Auto" xil_pn:valueState="default"/>
     <property xil_pn:name="Use Synthesis Constraints File" xil_pn:value="true" xil_pn:valueState="default"/>
     <property xil_pn:name="User Browsed Strategy Files" xil_pn:value="" xil_pn:valueState="default"/>
-    <property xil_pn:name="UserID Code (8 Digit Hexadecimal)" xil_pn:value="0xFFFFFFFF" xil_pn:valueState="default"/>
+    <property xil_pn:name="UserID Code (8 Digit Hexadecimal)" xil_pn:value="0x42240300" xil_pn:valueState="non-default"/>
     <property xil_pn:name="VCCAUX Voltage Level spartan6" xil_pn:value="2.5V" xil_pn:valueState="default"/>
     <property xil_pn:name="VHDL Source Analysis Standard" xil_pn:value="VHDL-93" xil_pn:valueState="default"/>
     <property xil_pn:name="Value Range Check" xil_pn:value="false" xil_pn:valueState="default"/>
