@@ -28,9 +28,17 @@ module fpgaminer_top (
 );
 
 	//// Configuration Options
+	//
+	// Frequency (MHz) of the incoming clock (CLK_100MHZ)
 	localparam INPUT_CLOCK_FREQUENCY = 100;
+	// What frequency of operation Synthesis and P&R should target. If
+	// ISE can meet timing requirements, then this is the guaranteed
+	// frequency of operation.
 	localparam SYNTHESIS_FREQUENCY = 50;
+	// What frequency the FPGA should boot-up to.
 	localparam BOOTUP_FREQUENCY = 50;
+	// What is the maximum allowed overclock. User will not be able to set
+	// clock frequency above this threshold.
 	localparam MAXIMUM_FREQUENCY = 50;
 
 
