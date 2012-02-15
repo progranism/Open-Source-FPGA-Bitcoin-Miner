@@ -85,7 +85,7 @@
 // 0xA:		data[63:32]
 // 0xB:		data[95:64]; Writing here also causes midstate+data to latch.
 // 0xC:		--
-// 0xD:		Clock Configuration (0x000000MM)
+// 0xD:		Clock Configuration (speed in MHz)
 // 0xE:		Golden Nonce
 // 0xF:		--
 
@@ -191,7 +191,7 @@ module jtag_comm # (
 				4'hC: dr[31:0] <= 32'h55555555;
 				4'hD: dr[31:0] <= clock_config;
 				4'hE: dr[31:0] <= fifo_data_valid ? tck_golden_nonce : 32'hFFFFFFFF;
-				4'hF: dr[31:0] <= 32'h00000000;
+				4'hF: dr[31:0] <= 32'hFFFFFFFF;
 			endcase
 		end
 		else if (jt_shift == 1'b1)
@@ -204,6 +204,8 @@ module jtag_comm # (
 			addr <= jtag_addr;
 			fifo_data_valid <= fifo_rd;
 
+			// TODO: We should min/max the clock_config register
+			// here to match the hard limits and resolution.
 			if (jtag_we)
 			begin
 				case (jtag_addr)
