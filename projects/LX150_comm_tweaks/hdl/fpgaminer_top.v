@@ -113,7 +113,9 @@ module fpgaminer_top (
 	wire [255:0] comm_midstate;
 	wire [95:0] comm_data;
 	reg is_golden_ticket = 1'b0;
-	reg [31:0] golden_nonce = 0;
+	reg [31:0] golden_nonce;
+	reg golden_ticket_buf = 1'b0;
+	reg [31:0] golden_nonce_buf;
 
 `ifndef SIM
 	jtag_comm # (
@@ -122,8 +124,8 @@ module fpgaminer_top (
 		.INITIAL_FREQUENCY (BOOTUP_FREQUENCY)
 	) comm_blk (
 		.rx_hash_clk (hash_clk),
-		.rx_new_nonce (is_golden_ticket),
-		.rx_golden_nonce (golden_nonce),
+		.rx_new_nonce (golden_ticket_buf),
+		.rx_golden_nonce (golden_nonce_buf),
 
 		.tx_new_work (comm_new_work),
 		.tx_midstate (comm_midstate),
@@ -174,6 +176,8 @@ module fpgaminer_top (
 		// Check to see if the last hash generated is valid.
 		is_golden_ticket <= hash2_w == 32'hA41F32E7;
 		golden_nonce <= nonce2;
+
+		{golden_ticket_buf, golden_nonce_buf} <= {is_golden_ticket, golden_nonce};
 	end
 
 endmodule
