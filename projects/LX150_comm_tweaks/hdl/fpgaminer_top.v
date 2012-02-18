@@ -41,6 +41,7 @@ module fpgaminer_top (
 	localparam MAXIMUM_FREQUENCY = 200;
 	
 	// ONLY FOR DEV TESTING:
+	//`define DUMMY_ADDER
 	//`define DUMMY_HASHER
 
 
@@ -76,6 +77,17 @@ module fpgaminer_top (
 
 	//// ZTEX Hashers
 `ifdef DUMMY_HASHER
+	wire [31:0] hash2_w;
+
+	dummy_pipe130 p1 (
+		.clk (hash_clk),
+		.state (midstate),
+		.state2 (midstate),
+		.data ({384'h000002800000000000000000000000000000000000000000000000000000000000000000000000000000000080000000, nonce, data}),
+		.hash (hash2_w)
+	);
+`else
+`ifdef DUMMY_ADDR
 	reg [31:0] hash2_w;
 	reg [31:0] stage1, stage2, stage3, stage4, stage5;
 
@@ -106,6 +118,7 @@ module fpgaminer_top (
 		.hash (hash2_w)
 	);
 `endif
+`endif
 
 
 	//// Communication Module
@@ -114,8 +127,8 @@ module fpgaminer_top (
 	wire [95:0] comm_data;
 	reg is_golden_ticket = 1'b0;
 	reg [31:0] golden_nonce;
-	reg golden_ticket_buf = 1'b0;
-	reg [31:0] golden_nonce_buf;
+	reg [3:0] golden_ticket_buf = 4'b0;
+	reg [127:0] golden_nonce_buf;
 
 `ifndef SIM
 	jtag_comm # (
@@ -124,8 +137,8 @@ module fpgaminer_top (
 		.INITIAL_FREQUENCY (BOOTUP_FREQUENCY)
 	) comm_blk (
 		.rx_hash_clk (hash_clk),
-		.rx_new_nonce (golden_ticket_buf),
-		.rx_golden_nonce (golden_nonce_buf),
+		.rx_new_nonce (golden_ticket_buf[3]),
+		.rx_golden_nonce (golden_nonce_buf[127:96]),
 
 		.tx_new_work (comm_new_work),
 		.tx_midstate (comm_midstate),
@@ -177,7 +190,8 @@ module fpgaminer_top (
 		is_golden_ticket <= hash2_w == 32'hA41F32E7;
 		golden_nonce <= nonce2;
 
-		{golden_ticket_buf, golden_nonce_buf} <= {is_golden_ticket, golden_nonce};
+		golden_ticket_buf <= {golden_ticket_buf[2:0], is_golden_ticket};
+		golden_nonce_buf <= {golden_nonce_buf[95:0], golden_nonce};
 	end
 
 endmodule
