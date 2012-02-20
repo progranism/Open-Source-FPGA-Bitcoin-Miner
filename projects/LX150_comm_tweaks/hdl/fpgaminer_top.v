@@ -33,7 +33,7 @@ module fpgaminer_top (
 	// What frequency of operation Synthesis and P&R should target. If
 	// ISE can meet timing requirements, then this is the guaranteed
 	// frequency of operation.
-	localparam SYNTHESIS_FREQUENCY = 200;
+	localparam SYNTHESIS_FREQUENCY = 250;
 	// What frequency the FPGA should boot-up to.
 	localparam BOOTUP_FREQUENCY = 50;
 	// What is the maximum allowed overclock. User will not be able to set
@@ -42,7 +42,7 @@ module fpgaminer_top (
 	
 	// ONLY FOR DEV TESTING:
 	//`define DUMMY_ADDER
-	//`define DUMMY_HASHER
+	`define DUMMY_HASHER
 
 
 	//// Clock Buffer

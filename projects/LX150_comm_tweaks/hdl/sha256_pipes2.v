@@ -77,7 +77,9 @@ module sha256_pipe2_base ( clk, i_state, i_data, out );
 		
 		    reg [511:0] data_buf;
 		    reg [223:0] state_buf;
-		    reg [31:0] data15_p1, data15_p2, data15_p3, t1;
+		    reg [31:0] data15_p1, data15_p2, data15_p3, t1, t1_helper;
+
+		    wire [31:0] state4 = state_buf[`IDX(3)] + t1;
 
 		    always @ (posedge clk)
 		    begin
@@ -91,17 +93,18 @@ module sha256_pipe2_base ( clk, i_state, i_data, out );
 			
     	    		state_buf <= S[i-1].state;													// 2
 			
-		        t1 <= `CH( S[i-1].state[`IDX(4)], S[i-1].state[`IDX(5)], S[i-1].state[`IDX(6)] ) + `E1( S[i-1].state[`IDX(4)] ) + S[i-1].t1_p1;	// 6
+		        t1 <= t1_helper + `E1( S[i-1].state[`IDX(4)] ) + S[i-1].t1_p1;	// 6
 
 	                state[`IDX(0)] <= `MAJ( state_buf[`IDX(0)], state_buf[`IDX(1)], state_buf[`IDX(2)] ) + `E0( state_buf[`IDX(0)] ) + t1;		// 7
 			state[`IDX(1)] <= state_buf[`IDX(0)];												// 1
 			state[`IDX(2)] <= state_buf[`IDX(1)];												// 1
 			state[`IDX(3)] <= state_buf[`IDX(2)];												// 1
-			state[`IDX(4)] <= state_buf[`IDX(3)] + t1;											// 2
+			state[`IDX(4)] <= state4;											// 2
 			state[`IDX(5)] <= state_buf[`IDX(4)];												// 1
 			state[`IDX(6)] <= state_buf[`IDX(5)];												// 1
 
 			t1_p1 <= state_buf[`IDX(6)] + data_buf[`IDX(1)] + Ks[`IDX((127-i) & 63)];							// 2
+			t1_helper <= `CH( state4, state_buf[`IDX(4)], state_buf[`IDX(5)] );
 		    end
 
 		end
