@@ -8,3 +8,8 @@ PLLJ_PLLSPE_INFO.txt
 *.cr.mti
 vsim.wlf
 transcript
+webtalk.log
+webtalk_impact.xml
+usage_statistics_webtalk.html
+impact.xsl
+impact_impact.xwbt
