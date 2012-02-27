@@ -38,7 +38,7 @@ module fpgaminer_top (
 	localparam BOOTUP_FREQUENCY = 50;
 	// What is the maximum allowed overclock. User will not be able to set
 	// clock frequency above this threshold.
-	localparam MAXIMUM_FREQUENCY = 200;
+	localparam MAXIMUM_FREQUENCY = 250;
 	
 	// ONLY FOR DEV TESTING:
 	//`define DUMMY_ADDER

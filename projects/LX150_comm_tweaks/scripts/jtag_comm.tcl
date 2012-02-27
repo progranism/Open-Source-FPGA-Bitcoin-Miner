@@ -107,7 +107,7 @@ proc get_result_from_fpga {} {
 
 	set nonce [read_fpga_register 0xE]
 
-	if {$nonce == 0} {
+	if {$nonce == 0xFFFFFFFF} {
 		return -1
 	} else {
 		return $nonce
