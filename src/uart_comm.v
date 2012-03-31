@@ -45,6 +45,19 @@ module uart_comm (
 	output tx_serial
 );
 
+	localparam MSG_BUF_LEN = 60;
+
+	// States
+	localparam STATE_IDLE = 1;
+	localparam STATE_READ = 2;
+	localparam STATE_PARSE = 4;
+	localparam STATE_SEND = 8;
+
+	// Message Types
+	localparam MSG_INFO = 0;
+	localparam MSG_INVALID = 1;
+
+
 	// Configuration data
 	reg [351:0] current_job = 352'd0;
 	reg [255:0] midstate = 256'd0;
@@ -64,20 +77,97 @@ module uart_comm (
 		.tx_byte (uart_rx_byte)
 	);
 
-	uart_tx uart_tx_blk (
+	uart_tx_fifo uart_tx_blk (
 		.clk (comm_clk),
-		.rx_we (uart_rx_flag),
-		.rx_data (uart_rx_byte+8'd1),
+		.rx_we (uart_tx_we),
+		.rx_data (uart_tx_data),
 		.tx_busy (uart_tx_busy),
 		.tx_serial (tx_serial)
 	);
 
+	// RX Message Buffer
+	reg [63:0] outgoing_msg;
+	reg [7:0] outgoing_msg_type;
+	reg [63:0] system_info = 256'hDEADBEEF13370D13;
+	reg [MSG_BUF_LEN*8-1:0] msg_data;
+	reg [7:0] msg_length, length, msg_type;
+	reg [3:0] state = STATE_IDLE;
 
-	// DEBUG: LOOPBACK
+
 	always @ (posedge comm_clk)
 	begin
-		//if (uart_rx_flag & ~uart_tx_busy)
+		uart_tx_we <= 1'b0;
 
+		case (state)
+			STATE_IDLE: begin	// Waiting for new packet
+				if (uart_rx_flag && uart_rx_byte == 0)	// PING
+				begin
+					uart_tx_we <= 1'b1;
+					uart_tx_data <= 8'd1;	// PONG
+				end
+				else if (uart_rx_flag && uart_rx_byte < 8)	// Invalid Length
+				begin
+					length <= 8'd1;
+					msg_length <= 8'h8;
+					state <= STATE_SEND;
+					outgoing_msg_type <= MSG_INVALID;
+				end
+				else if (uart_rx_flag)
+				begin
+					state <= STATE_READ;
+					msg_length <= uart_rx_byte;
+					length <= 8'd2;
+				end
+			end
+			STATE_READ: begin	// Reading packet
+				if (uart_rx_flag)
+				begin
+					msg_data <= {uart_rx_byte, msg_data[MSG_BUF_LEN*8-1:8]};
+					length <= length + 8'd1;
+				end
+
+				if (length == 8'd4)
+					msg_type <= uart_rx_byte;
+
+				if (uart_rx_flag && (length == msg_length))
+					state <= STATE_PARSE;
+			end
+
+			STATE_PARSE: begin	// Packet received
+				length <= 8'd1;
+				msg_length <= 8'd8;
+				state <= STATE_SEND;
+
+				if (msg_type == MSG_INFO && msg_length == 8)
+				begin
+					outgoing_msg_type <= MSG_INFO;
+					outgoing_msg <= system_info;
+					msg_length <= 8'd16;
+				end
+				else
+					outgoing_msg_type <= MSG_INVALID;
+			end
+
+			STATE_SEND: begin	// Send packet
+				uart_tx_we <= 1'b1;
+				length <= length + 8'd1;
+
+				if (length == 8'd1)
+					uart_tx_data <= msg_length;
+				else if (length == 8'd2 || length == 8'd3)
+					uart_tx_data <= 8'h00;
+				else if (length == 8'd4)
+					uart_tx_data <= outgoing_msg_type;
+				else if (length <= msg_length)
+				begin
+					uart_tx_data <= outgoing_msg[7:0];
+					outgoing_msg <= {8'd0, outgoing_msg[63:8]};
+				end
+
+				if (length == msg_length)
+					state <= STATE_IDLE;
+			end
+		endcase
 	end
 
 endmodule

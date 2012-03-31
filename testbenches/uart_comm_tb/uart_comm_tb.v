@@ -4,7 +4,7 @@
 module uart_comm_tb;
 
 	// Clocks
-	reg serial_clk = 0;
+	reg comm_clk = 0;
 	reg uart_clk = 0;
 
 	initial while(1) begin
@@ -12,16 +12,16 @@ module uart_comm_tb;
 	end
 
 	initial while(1) begin
-		#10 serial_clk = ~serial_clk;
+		#10 comm_clk = ~comm_clk;
 	end
 
 
 	// Test data
-	reg [7*10+1:0] testdata = {1'b1, "N", 1'b0, 1'b1, "i", 1'b0, 1'b1, "O", 1'b0, 1'b1, "c", 1'b0, 1'b1, "T", 1'b0, 1'b1, "i", 1'b0, 1'b1, "B", 1'b0, 1'b1, 1'b1};
+	reg [115:0] testdata = 'b1111_0000000001_1111_0000100001_0000000001_0000000001_0000000001_0000000001_0000000001_0000000001_0000000001_1111_0001000001_1111;
 	
 	always @ (posedge uart_clk)
 	begin
-		testdata <= {1'b1, testdata[7*10+1:1]};
+		testdata <= (testdata << 1) | 1'b1;
 	end
 
 
@@ -29,8 +29,8 @@ module uart_comm_tb;
 	wire uut_tx;
 
 	uart_comm uut (
-		.serial_clk (serial_clk),
-		.rx_serial (testdata[0]),
+		.comm_clk (comm_clk),
+		.rx_serial (testdata[115]),
 		.tx_serial (uut_tx)
 	);
 
@@ -39,10 +39,26 @@ module uart_comm_tb;
 	initial
 	begin
 		$dumpfile("uart_comm_tb.vcd");
-		$dumpvars;
+		$dumpvars(0, uut);
 
-		#30000 $finish;
+		#120000 $finish;
 	end
+
+
+	// UART Dump
+	wire dump_flag;
+	wire [7:0] dump_byte;
+
+	uart_rx uart_dump (
+		.clk (comm_clk),
+		.rx_serial (uut_tx),
+		.tx_flag (dump_flag),
+		.tx_byte (dump_byte)
+	);
+
+	always @ (posedge comm_clk)
+		if (dump_flag)
+			$display("[%X] ", dump_byte);
 
 endmodule
 
