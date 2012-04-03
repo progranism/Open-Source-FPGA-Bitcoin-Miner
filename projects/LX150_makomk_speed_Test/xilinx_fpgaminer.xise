@@ -12,7 +12,7 @@
     <!-- Copyright (c) 1995-2011 Xilinx, Inc.  All rights reserved. -->
   </header>
 
-  <version xil_pn:ise_version="13.2" xil_pn:schema_version="2"/>
+  <version xil_pn:ise_version="13.4" xil_pn:schema_version="2"/>
 
   <files>
     <file xil_pn:name="../../src/sha-256-functions.v" xil_pn:type="FILE_VERILOG">
@@ -120,6 +120,7 @@
     <property xil_pn:name="Encrypt Key Select spartan6" xil_pn:value="BBRAM" xil_pn:valueState="default"/>
     <property xil_pn:name="Equivalent Register Removal Map" xil_pn:value="true" xil_pn:valueState="default"/>
     <property xil_pn:name="Equivalent Register Removal XST" xil_pn:value="true" xil_pn:valueState="default"/>
+    <property xil_pn:name="Essential Bits" xil_pn:value="false" xil_pn:valueState="default"/>
     <property xil_pn:name="Evaluation Development Board" xil_pn:value="None Specified" xil_pn:valueState="default"/>
     <property xil_pn:name="Exclude Compilation of Deprecated EDK Cores" xil_pn:value="true" xil_pn:valueState="default"/>
     <property xil_pn:name="Exclude Compilation of EDK Sub-Libraries" xil_pn:value="false" xil_pn:valueState="default"/>
@@ -193,6 +194,7 @@
     <property xil_pn:name="Maximum Signal Name Length" xil_pn:value="20" xil_pn:valueState="default"/>
     <property xil_pn:name="Move First Flip-Flop Stage" xil_pn:value="true" xil_pn:valueState="default"/>
     <property xil_pn:name="Move Last Flip-Flop Stage" xil_pn:value="true" xil_pn:valueState="default"/>
+    <property xil_pn:name="MultiBoot: Insert IPROG CMD in the Bitfile spartan6" xil_pn:value="Enable" xil_pn:valueState="default"/>
     <property xil_pn:name="MultiBoot: Next Configuration Mode spartan6" xil_pn:value="001" xil_pn:valueState="default"/>
     <property xil_pn:name="MultiBoot: Starting Address for Golden Configuration spartan6" xil_pn:value="0x00000000" xil_pn:valueState="default"/>
     <property xil_pn:name="MultiBoot: Starting Address for Next Configuration spartan6" xil_pn:value="0x00000000" xil_pn:valueState="default"/>

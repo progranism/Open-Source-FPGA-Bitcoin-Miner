@@ -1,0 +1,17 @@
+set_global_assignment -name FAMILY "Cyclone IV E"
+set_global_assignment -name DEVICE EP4CE115F29C7
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+set_global_assignment -name DEVICE_FILTER_SPEED_GRADE 7
+set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 1
+set_global_assignment -name NOMINAL_CORE_SUPPLY_VOLTAGE 1.2V
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "NO HEAT SINK WITH STILL AIR"
+set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY quartus_output
+set_global_assignment -name POWER_DEFAULT_TOGGLE_RATE 65%
+
+
+# Clocks
+set_location_assignment PIN_Y2 -to MAIN_CLK
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to MAIN_CLK
+
