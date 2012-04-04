@@ -70,6 +70,7 @@ module uart_comm (
 	// Message Types
 	localparam MSG_INFO = 0;
 	localparam MSG_INVALID = 1;
+	localparam MSG_RESEND = 3;
 
 
 	// Configuration data
@@ -99,6 +100,20 @@ module uart_comm (
 		.tx_serial (tx_serial)
 	);
 
+	// CRC32 Module
+	wire crc_reset = (state == STATE_IDLE);
+	wire crc_we = uart_rx_flag & (state == STATE_IDLE || state == STATE_READ);
+	wire [7:0] crc_data = uart_rx_byte;
+	wire [31:0] crc;
+
+	CRC32 crc_blk (
+		.clk (comm_clk),
+		.reset (crc_reset),
+		.rx_we (crc_we),
+		.rx_byte (crc_data),
+		.tx_crc (crc)
+	);
+
 	//
 	reg [63:0] system_info = 256'hDEADBEEF13370D13;
 
@@ -113,7 +128,6 @@ module uart_comm (
 	always @ (posedge comm_clk)
 	begin
 		uart_tx_we <= 1'b0;
-		length <= length + 8'd1;
 
 		case (state)
 			//// Waiting for new packet
@@ -141,6 +155,7 @@ module uart_comm (
 			//// Reading packet
 			STATE_READ: if (uart_rx_flag) begin
 				msg_data <= {uart_rx_byte, msg_data[MSG_BUF_LEN*8-1:8]};
+				length <= length + 8'd1;
 
 				if (length == 8'd4)
 					msg_type <= uart_rx_byte;
@@ -157,7 +172,9 @@ module uart_comm (
 				msg_length <= 8'd8;
 				state <= STATE_SEND;
 
-				if (msg_type == MSG_INFO && msg_length == 8)
+				if (crc != 32'd0)
+					msg_type <= MSG_RESEND;
+				else if (msg_type == MSG_INFO && msg_length == 8)
 				begin
 					msg_type <= MSG_INFO;
 					msg_data <= system_info;
@@ -170,6 +187,7 @@ module uart_comm (
 			//// Send packet
 			STATE_SEND: begin
 				uart_tx_we <= 1'b1;
+				length <= length + 8'd1;
 
 				if (length == 8'd1)
 					uart_tx_data <= msg_length;
