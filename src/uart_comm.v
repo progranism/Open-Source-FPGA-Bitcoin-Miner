@@ -189,7 +189,7 @@ module uart_comm (
 				else if (msg_type == MSG_PUSH_JOB && msg_length == (JOB_SIZE/8 + 8))
 				begin
 					queued_job_en <= 1'b0;
-					current_job <= msg_data[JOB_SIZE-1:0];
+					current_job <= msg_data[MSG_BUF_LEN*8-32-1:MSG_BUF_LEN*8-32-JOB_SIZE];
 					new_work_flag <= ~new_work_flag;
 
 					msg_type <= MSG_ACK;
@@ -197,7 +197,7 @@ module uart_comm (
 				else if (msg_type == MSG_QUEUE_JOB && msg_length == (JOB_SIZE/8 + 8))
 				begin
 					queued_job_en <= 1'b1;
-					queued_job <= msg_data[JOB_SIZE-1:0];
+					queued_job <= msg_data[MSG_BUF_LEN*8-32-1:MSG_BUF_LEN*8-32-JOB_SIZE];
 
 					msg_type <= MSG_ACK;
 				end
