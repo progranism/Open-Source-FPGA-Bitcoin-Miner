@@ -32,26 +32,29 @@
 
 
 // Implemented incoming messages:
-// PING, GET_INFO
+// PING, GET_INFO, PUSH_JOB, QUEUE_JOB
 //
-// TODO: RESET, ACK?, RESEND?, PUSH_JOB, QUEUE_JOB, GET_CURRENT_NONCE?,
+// TODO: RESET, ACK?, RESEND?, GET_CURRENT_NONCE,
 // GET_BASE_CLOCK, GET_CLOCK, SET_CLOCK
 //
 // Implemented outgoing messages
-// PONG, INFO, INVALID
+// PONG, INFO, INVALID, RESEND, ACK
 //
-// TODO: ACK, RESEND, NONCE_FOUND, QUEUED_JOB_STARTED, CURRENT_NONCE,
+// TODO: NONCE_FOUND, QUEUED_JOB_STARTED, CURRENT_NONCE,
 // BASE_CLOCK, CURRENT_CLOCK, NONCERANGE_EXHAUSTED
 
 
 module uart_comm (
 	// Hashing Clock Domain
 	input hash_clk,
+	input rx_need_work,
 	input rx_new_nonce,
 	input [31:0] rx_golden_nonce,
 	output reg tx_new_work = 1'b0,
 	output reg [255:0] tx_midstate = 256'd0,
 	output reg [95:0] tx_data = 96'd0,
+	output reg [31:0] tx_noncemin = 32'd0,
+	output reg [31:0] tx_noncemax = 32'd0,
 
 	// UART Clock Domain
 	input comm_clk,
@@ -60,6 +63,7 @@ module uart_comm (
 );
 
 	localparam MSG_BUF_LEN = 60;
+	localparam JOB_SIZE = 256 + 96 + 32 + 32;
 
 	// States
 	localparam STATE_IDLE = 4'b0001;
@@ -70,14 +74,16 @@ module uart_comm (
 	// Message Types
 	localparam MSG_INFO = 0;
 	localparam MSG_INVALID = 1;
+	localparam MSG_ACK = 2;
 	localparam MSG_RESEND = 3;
+	localparam MSG_PUSH_JOB = 4;
+	localparam MSG_QUEUE_JOB = 5;
 
 
 	// Configuration data
-	reg [351:0] current_job = 352'd0;
-	reg [255:0] midstate = 256'd0;
+	reg [JOB_SIZE-1:0] current_job = {JOB_SIZE{1'b0}}, queued_job = {JOB_SIZE{1'b0}};
+	reg queued_job_en = 1'b0;
 	reg new_work_flag = 1'b0;
-	reg [95:0] data = 96'd0;
 
 	// UART Modules
 	wire uart_rx_flag, uart_tx_busy;
@@ -180,6 +186,21 @@ module uart_comm (
 					msg_data <= system_info;
 					msg_length <= 8'd16;
 				end
+				else if (msg_type == MSG_PUSH_JOB && msg_length == (JOB_SIZE/8 + 8))
+				begin
+					queued_job_en <= 1'b0;
+					current_job <= msg_data[JOB_SIZE-1:0];
+					new_work_flag <= ~new_work_flag;
+
+					msg_type <= MSG_ACK;
+				end
+				else if (msg_type == MSG_QUEUE_JOB && msg_length == (JOB_SIZE/8 + 8))
+				begin
+					queued_job_en <= 1'b1;
+					queued_job <= msg_data[JOB_SIZE-1:0];
+
+					msg_type <= MSG_ACK;
+				end
 				else
 					msg_type <= MSG_INVALID;
 			end
@@ -205,6 +226,20 @@ module uart_comm (
 					state <= STATE_IDLE;
 			end
 		endcase
+	end
+
+
+	// Cross from comm_clk to hash_clk
+	reg [JOB_SIZE-1:0] meta_job;
+	reg [2:0] meta_new_work_flag;
+
+	always @ (posedge hash_clk)
+	begin
+		meta_job <= current_job;
+		meta_new_work_flag <= {new_work_flag, meta_new_work_flag[2:1]};
+
+		tx_new_work <= meta_new_work_flag[2] ^ meta_new_work_flag[1];
+		{tx_midstate, tx_data, tx_noncemin, tx_noncemax} <= meta_job;
 	end
 
 endmodule
