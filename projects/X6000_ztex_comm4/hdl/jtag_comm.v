@@ -169,7 +169,7 @@ module jtag_comm # (
 		begin
 			dr <= 38'd0;
 		end
-		else if (jt_capture == 1'b1)
+		else if (jt_capture & jt_sel)
 		begin
 			// Capture-DR
 			checksum <= 1'b1;
@@ -196,12 +196,12 @@ module jtag_comm # (
 				4'hF: dr[31:0] <= 32'hFFFFFFFF;
 			endcase
 		end
-		else if (jt_shift == 1'b1)
+		else if (jt_shift & jt_sel)
 		begin
 			dr <= {jt_tdi, dr[37:1]};
 			checksum <= checksum ^ jt_tdi;
 		end
-		else if (jt_update & checksum_valid)
+		else if (jt_update & checksum_valid & jt_sel)
 		begin
 			addr <= jtag_addr;
 			fifo_data_valid <= fifo_rd;

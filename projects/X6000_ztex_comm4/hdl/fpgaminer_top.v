@@ -40,10 +40,6 @@ module fpgaminer_top (
 	// clock frequency above this threshold.
 	localparam MAXIMUM_FREQUENCY = 250;
 	
-	// ONLY FOR DEV TESTING:
-	//`define DUMMY_ADDER
-	//`define DUMMY_HASHER
-
 
 	//// Clock Buffer
 	wire clkin_100MHZ;
@@ -76,31 +72,6 @@ module fpgaminer_top (
 
 
 	//// ZTEX Hashers
-`ifdef DUMMY_HASHER
-	wire [31:0] hash2_w;
-
-	dummy_pipe130 p1 (
-		.clk (hash_clk),
-		.state (midstate),
-		.state2 (midstate),
-		.data ({384'h000002800000000000000000000000000000000000000000000000000000000000000000000000000000000080000000, nonce, data}),
-		.hash (hash2_w)
-	);
-`else
-`ifdef DUMMY_ADDR
-	reg [31:0] hash2_w;
-	reg [31:0] stage1, stage2, stage3, stage4, stage5;
-
-	always @ (posedge hash_clk)
-	begin
-		stage1 <= nonce + data[95:64] + data[63:32];
-		stage2 <= stage1 + data[31:0] + midstate[255:224];
-		stage3 <= stage2 + midstate[223:192] + midstate[191:160];
-		stage4 <= stage3 + midstate[159:128] + midstate[127:96];
-		stage5 <= stage4 + midstate[95:64] + midstate[63:32];
-		hash2_w <= stage5 + midstate[31:0];
-	end
-`else
 	wire [255:0] hash;
 	wire [31:0] hash2_w;
 
@@ -117,8 +88,6 @@ module fpgaminer_top (
 		.data ({256'h0000010000000000000000000000000000000000000000000000000080000000, hash}),
 		.hash (hash2_w)
 	);
-`endif
-`endif
 
 
 	//// Communication Module
