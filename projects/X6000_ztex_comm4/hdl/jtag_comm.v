@@ -199,7 +199,7 @@ module jtag_comm # (
 		else if (jt_shift & jt_sel)
 		begin
 			dr <= {jt_tdi, dr[37:1]};
-			checksum <= checksum ^ jt_tdi;
+			checksum <= 1'b1^jt_tdi^dr[37]^dr[36]^dr[35]^dr[34]^dr[33]^dr[32]^dr[31]^dr[30]^dr[29]^dr[28]^dr[27]^dr[26]^dr[25]^dr[24]^dr[23]^dr[22]^dr[21]^dr[20]^dr[19]^dr[18]^dr[17]^dr[16]^dr[15]^dr[14]^dr[13]^dr[12]^dr[11]^dr[10]^dr[9]^dr[8]^dr[7]^dr[6]^dr[5]^dr[4]^dr[3]^dr[2]^dr[1];
 		end
 		else if (jt_update & checksum_valid & jt_sel)
 		begin
