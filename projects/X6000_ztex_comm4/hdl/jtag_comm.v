@@ -144,7 +144,7 @@ module jtag_comm # (
 	wire [31:0] tck_golden_nonce;
 	wire fifo_empty, fifo_full;
 	wire fifo_we = rx_new_nonce & (rx_golden_nonce != 32'hFFFFFFFF) & ~fifo_full;
-	wire fifo_rd = checksum_valid & jt_update & ~jtag_we & (jtag_addr == 4'hE) & ~fifo_empty & ~jt_reset;
+	wire fifo_rd = checksum_valid & jt_update & ~jtag_we & (jtag_addr == 4'hE) & ~fifo_empty & ~jt_reset & jt_sel;
 	wire jtag_we = dr[36];
 	wire [3:0] jtag_addr = dr[35:32];
 
