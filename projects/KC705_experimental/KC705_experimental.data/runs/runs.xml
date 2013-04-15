@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<Runs Version="1" Minor="9">
+	<Run Id="synth_1" Type="Ft3:Synth" SrcSet="sources_1" Part="xc7k325tffg900-2" LaunchPart="xc7k325tffg900-2" ConstrsSet="constrs_1" Description="Vivado Synthesis Defaults" State="current" Dir="$PRUNDIR/synth_1" LaunchTime="1366000293">
+		<File Type="RDS-UTIL" Name="fpgaminer_top_utilization_synth.rpt"/>
+		<File Type="RUN-STRAT" Name="$PDATADIR/runs/synth_1/synth_1.psg"/>
+		<File Type="RDS-UTIL-PB" Name="fpgaminer_top_utilization_synth.pb"/>
+		<File Type="RDS-DCP" Name="fpgaminer_top.dcp"/>
+		<File Type="VDS-TIMINGSUMMARY" Name="fpgaminer_top_timing_summary_synth.rpt"/>
+		<File Type="VDS-TIMING-PB" Name="fpgaminer_top_timing_summary_synth.pb"/>
+		<File Type="PA-TCL" Name="fpgaminer_top.tcl"/>
+		<File Type="RUN-SRCS" Name="$PDATADIR/runs/synth_1/sources.xml"/>
+		<File Type="RUN-CONSTRS" Name="$PDATADIR/runs/synth_1/constrs_in.xml"/>
+		<File Type="RDS-RDS" Name="fpgaminer_top.rds"/>
+	</Run>
+	<Run Id="impl_1" Type="Ft2:EntireDesign" SynthRun="synth_1" Part="xc7k325tffg900-2" LaunchPart="xc7k325tffg900-2" ConstrsSet="constrs_1" Description="Vivado Implementation Defaults" State="current" Dir="$PRUNDIR/impl_1" LaunchTime="1366000996">
+		<File Type="RUN-STRAT" Name="$PDATADIR/runs/impl_1/impl_1.psg"/>
+		<File Type="OPT-DRC" Name="fpgaminer_top_drc_opted.rpt"/>
+		<File Type="PLACE-IO" Name="fpgaminer_top_io_placed.rpt"/>
+		<File Type="PLACE-CLK" Name="fpgaminer_top_clock_utilization_placed.rpt"/>
+		<File Type="PLACE-UTIL" Name="fpgaminer_top_utilization_placed.rpt"/>
+		<File Type="PLACE-UTIL-PB" Name="fpgaminer_top_utilization_placed.pb"/>
+		<File Type="PLACE-CTRL" Name="fpgaminer_top_control_sets_placed.rpt"/>
+		<File Type="PLACE-SIMILARITY" Name="fpgaminer_top_incremental_reuse_placed.rpt"/>
+		<File Type="ROUTE-DRC" Name="fpgaminer_top_drc_routed.rpt"/>
+		<File Type="PA-TCL" Name="fpgaminer_top.tcl"/>
+		<File Type="ROUTE-DRC-PB" Name="fpgaminer_top_drc_routed.pb"/>
+		<File Type="ROUTE-PWR" Name="fpgaminer_top_power_routed.rpt"/>
+		<File Type="ROUTE-PWR-SUM" Name="fpgaminer_top_power_summary_routed.pb"/>
+		<File Type="ROUTE-STATUS" Name="fpgaminer_top_route_status.rpt"/>
+		<File Type="ROUTE-STATUS-PB" Name="fpgaminer_top_route_status.pb"/>
+		<File Type="ROUTE-DCP" Name="fpgaminer_top_routed.dcp"/>
+		<File Type="ROUTE-TIMINGSUMMARY" Name="fpgaminer_top_timing_summary_routed.rpt"/>
+		<File Type="ROUTE-TIMING-PB" Name="fpgaminer_top_timing_summary_routed.pb"/>
+		<File Type="OPT-DCP" Name="fpgaminer_top_opt.dcp"/>
+		<File Type="PLACE-DCP" Name="fpgaminer_top_placed.dcp"/>
+		<File Type="PWROPT-DCP" Name="fpgaminer_top_pwropt.dcp"/>
+		<File Type="RDI-RDI" Name="fpgaminer_top.rdi"/>
+		<File Type="PA-DCP" Name="fpgaminer_top.dcp"/>
+		<File Type="POSTPLACE-PWROPT-DCP" Name="fpgaminer_top_postplace_pwropt.dcp"/>
+		<File Type="PWROPT-DRC" Name="fpgaminer_top_drc_pwropted.rpt"/>
+		<File Type="PHYSOPT-DCP" Name="fpgaminer_top_physopt.dcp"/>
+		<File Type="PHYSOPT-DRC" Name="fpgaminer_top_drc_physopted.rpt"/>
+		<File Type="BG-BIT" Name="fpgaminer_top.bit"/>
+		<File Type="BG-DRC" Name="fpgaminer_top.drc"/>
+		<File Type="BG-BGN" Name="fpgaminer_top.bgn"/>
+		<File Type="BG-BIN" Name="fpgaminer_top.bin"/>
+		<File Type="BITSTR-MSK" Name="fpgaminer_top.msk"/>
+		<File Type="BITSTR-RBT" Name="fpgaminer_top.rbt"/>
+		<File Type="BITSTR-NKY" Name="fpgaminer_top.nky"/>
+		<File Type="BITSTR-BMM" Name="fpgaminer_top_bd.bmm"/>
+		<File Type="WBT-USG" Name="usage_statistics_webtalk.html"/>
+		<File Type="RUN-CONSTRS" Name="$PDATADIR/runs/impl_1/constrs_in.xml"/>
+	</Run>
+</Runs>
+
