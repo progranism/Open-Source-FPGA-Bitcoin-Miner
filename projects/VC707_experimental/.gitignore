@@ -1,0 +1,5 @@
+*.runs/
+*.jou
+*.log
+*.str
+*.data/wt

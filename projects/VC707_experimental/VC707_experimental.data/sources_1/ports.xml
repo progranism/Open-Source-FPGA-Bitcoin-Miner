@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<Interface Version="1" Minor="1">
+	<Ifc Id="ROOT" Top="1">
+		<Port Id="sys_clk_p" Dir="IN"/>
+		<Port Id="sys_clk_n" Dir="IN"/>
+		<Port Id="uart_rx" Dir="IN"/>
+		<Port Id="uart_tx" Dir="OUT"/>
+		<DiffPair Pos="sys_clk_p" Neg="sys_clk_n"/>
+	</Ifc>
+</Interface>
+

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!--Product Version: Vivado v2013.1 (64-bit)-->
+<Project Version="6" Minor="9" Path="H:/Documents/Projects/opensource_fpgaminer/projects/VC707_experimental/VC707_experimental.xpr">
+	<FileSet Dir="sources_1" File="fileset.xml"/>
+	<FileSet Dir="constrs_1" File="fileset.xml"/>
+	<FileSet Dir="sim_1" File="fileset.xml"/>
+	<HWSession Dir="hw" File="hwsession_1.xml"/>
+	<RunSet Dir="runs" File="runs.xml"/>
+	<DefaultLaunch Dir="$PRUNDIR"/>
+	<Config>
+		<Option Name="Id" Val="ceb324956de7470fafbe80d95a1af8fa"/>
+		<Option Name="Part" Val="xc7vx485tffg1761-2"/>
+		<Option Name="CompiledLibDir" Val="$PCACHEDIR/compile_simlib"/>
+		<Option Name="Board" Val="xilinx:virtex7:vc707:a"/>
+		<Option Name="SourceMgmtMode" Val="DisplayOnly"/>
+		<Option Name="ActiveSimSet" Val="sim_1"/>
+	</Config>
+</Project>
+
