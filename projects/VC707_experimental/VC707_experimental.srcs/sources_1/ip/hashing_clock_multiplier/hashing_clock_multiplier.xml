@@ -5411,7 +5411,7 @@
 				<xilinx:canUpgradeFrom>xilinx.com:ip:clk_wiz:3.2</xilinx:canUpgradeFrom>
 				<xilinx:canUpgradeFrom>xilinx.com:ip:clk_wiz:3.1</xilinx:canUpgradeFrom>
 			</xilinx:upgrades>
-			<xilinx:coreCreationDateTime>2013-05-04T23:10:32</xilinx:coreCreationDateTime>
+			<xilinx:coreCreationDateTime>2013-05-05T21:45:53</xilinx:coreCreationDateTime>
 		</xilinx:coreExtensions>
 		<xilinx:packagingInfo>
 			<xilinx:xilinxVersion>2013.1</xilinx:xilinxVersion>
