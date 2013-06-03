@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<Runs Version="1" Minor="9">
+	<Run Id="synth_1" Type="Ft3:Synth" SrcSet="sources_1" Part="xc7k160tfbg484-1" LaunchPart="xc7k160tfbg484-1" ConstrsSet="constrs_1" Description="Vivado Synthesis Defaults" State="current" Dir="$PRUNDIR/synth_1" LaunchTime="1370170680">
+		<File Type="RDS-UTIL" Name="fpgaminer_top_utilization_synth.rpt"/>
+		<File Type="RUN-STRAT" Name="$PDATADIR/runs/synth_1/synth_1.psg"/>
+		<File Type="RDS-UTIL-PB" Name="fpgaminer_top_utilization_synth.pb"/>
+		<File Type="RDS-DCP" Name="fpgaminer_top.dcp"/>
+		<File Type="VDS-TIMINGSUMMARY" Name="fpgaminer_top_timing_summary_synth.rpt"/>
+		<File Type="VDS-TIMING-PB" Name="fpgaminer_top_timing_summary_synth.pb"/>
+		<File Type="PA-TCL" Name="fpgaminer_top.tcl"/>
+		<File Type="RUN-SRCS" Name="$PDATADIR/runs/synth_1/sources.xml"/>
+		<File Type="RUN-CONSTRS" Name="$PDATADIR/runs/synth_1/constrs_in.xml"/>
+		<File Type="RDS-RDS" Name="fpgaminer_top.rds"/>
+	</Run>
+	<Run Id="impl_1" Type="Ft2:EntireDesign" SynthRun="synth_1" Part="xc7k160tfbg484-1" ConstrsSet="constrs_1" Description="Uses multiple algorithms for optimization, placement, and routing to get potentially better results." State="current"/>
+</Runs>
+
