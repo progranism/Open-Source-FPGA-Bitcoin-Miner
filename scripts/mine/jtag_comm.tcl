@@ -4,9 +4,24 @@
 # User API Functions
 # These should be generic and be the same no matter what the underlying FPGA is.
 # Use these to interact with the FPGA.
-# TODO: These are designed to assume a single FPGA. Re-design to handle multiple FPGAs, assigning
+# TODO: These are designed to assume a single FPGA per JTAG chain. Re-design to handle multiple FPGAs, assigning
 # an arbitrary ID to each FPGA.
 
+# Some helpful functions
+proc get_selected_list_item {lst idx} {
+	# Convert to integer
+	if [catch { set idx [expr {int($idx)}] }] {
+		set idx -1
+	}
+
+	if {$idx < 0 || $idx >= [llength $lst]} {
+		set len [llength $lst]
+		puts "Invalid number. Please enter a number from 0 to $len"
+		exit
+	}
+
+	return [lindex $lst $idx]
+}
 
 # Initialize the FPGA
 proc fpga_init {} {
@@ -133,9 +148,21 @@ proc instance_exists {name} {
 
 
 # Try to find an FPGA on the JTAG chain that has mining firmware loaded into it.
-# TODO: Return multiple FPGAs if more than one are found (that have mining firmware).
+# TODO: Return multiple FPGAs if more than one are found (that have mining firmware) on the selected JTAG chain.
 proc find_miner_fpga {} {
 	set hardware_names [get_hardware_names]
+
+	set id 0
+
+	# List out all hardware names and the devices connected to them
+	foreach hardware_name $hardware_names {
+		puts "$id) $hardware_name"
+		incr id
+
+		foreach device_name [get_device_names -hardware_name $hardware_name] {
+			puts "\t$device_name"
+		}
+	}
 
 	if {[llength $hardware_names] == 0} {
 		puts stderr "ERROR: There are no Altera devices currently connected."
@@ -143,18 +170,25 @@ proc find_miner_fpga {} {
 		return -1
 	}
 
-	foreach hardware_name $hardware_names {
-		if {[catch { set device_names [get_device_names -hardware_name $hardware_name] } exc]} {
-			#puts stderr "DEV-REMOVE: Error on get_device_names: $exc"
-			continue
-		}
+	puts -nonewline "\nWhich USB device would you like to scan? "
+	gets stdin selected_hardware_id
+	puts ""
 
-		foreach device_name $device_names {
-			if { [check_if_fpga_is_miner $hardware_name $device_name] } {
-				return [list $hardware_name $device_name]
-			}
+	set hardware_name [get_selected_list_item $hardware_names $selected_hardware_id]
+
+	puts "Selected USB device: $hardware_name\n\n\n"
+
+	if {[catch { set device_names [get_device_names -hardware_name $hardware_name] } exc]} {
+		#puts stderr "DEV-REMOVE: Error on get_device_names: $exc"
+		continue
+	}
+
+	foreach device_name $device_names {
+		if { [check_if_fpga_is_miner $hardware_name $device_name] } {
+			return [list $hardware_name $device_name]
 		}
 	}
+	
 
 	puts stderr "ERROR: There are no Altera FPGAs with mining firmware loaded on them."
 	puts stderr "Please program your FPGA with mining firmware and re-run this script.\n"
